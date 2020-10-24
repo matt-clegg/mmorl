@@ -81,6 +81,5 @@ namespace MMORL.Client.Net
                 _client.Recycle(message);
             }
         }
-
     }
 }

@@ -27,7 +27,7 @@ namespace MMORL.Client.Scenes
 
         public override void Input(Keys key)
         {
-            //_player?.Input(key);
+            _player?.Input(key);
         }
 
         public override void Update(float delta)
