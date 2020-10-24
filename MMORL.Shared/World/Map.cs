@@ -29,9 +29,20 @@ namespace MMORL.Shared.World
 
         public void Add(Entity entity, int x, int y)
         {
+            entity.Initialise(this, x, y);
             _entities.Add(entity);
-            entity.X = x;
-            entity.Y = y;
+        }
+
+        public void MoveEntity(int id, int x, int y)
+        {
+            foreach (Entity entity in Entities)
+            {
+                if (entity.Id == id)
+                {
+                    entity.X = x;
+                    entity.Y = y;
+                }
+            }
         }
 
         public Tile GetTile(int x, int y)

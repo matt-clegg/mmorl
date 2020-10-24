@@ -81,5 +81,13 @@ namespace MMORL.Client.Net
                 _client.Recycle(message);
             }
         }
+
+        public void SendMessage(IMessage message, NetDeliveryMethod deliveryMethod)
+        {
+            NetOutgoingMessage outgoing = _client.CreateMessage();
+            outgoing.Write((byte)message.Type);
+            message.Write(outgoing);
+            _client.SendMessage(outgoing, deliveryMethod);
+        }
     }
 }

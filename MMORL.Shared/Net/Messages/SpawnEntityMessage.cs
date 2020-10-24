@@ -13,23 +13,25 @@ namespace MMORL.Shared.Net
         public string Name { get; private set; }
         public string Sprite { get; private set; }
         public GameColor Color { get; private set; }
+        public byte Speed { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
 
         public SpawnEntityMessage() { }
 
         public SpawnEntityMessage(Entity entity, int x, int y, EntityType entityType)
-            : this(entity.Id, entity.Name, entity.Sprite, entity.Color, x, y, entityType)
+            : this(entity.Id, entity.Name, entity.Sprite, entity.Color, entity.Speed, x, y, entityType)
         {
 
         }
 
-        public SpawnEntityMessage(int entityId, string name, string sprite, GameColor color, int x, int y, EntityType entityType)
+        public SpawnEntityMessage(int entityId, string name, string sprite, GameColor color, int speed, int x, int y, EntityType entityType)
         {
             EntityId = entityId;
             Name = name;
             Sprite = sprite;
             Color = color;
+            Speed = (byte)speed;
             X = x;
             Y = y;
             EntityType = entityType;
@@ -41,6 +43,7 @@ namespace MMORL.Shared.Net
             EntityType = (EntityType)message.ReadByte();
             Sprite = message.ReadString();
             Color = (GameColor)message.ReadByte();
+            Speed = message.ReadByte();
             X = message.ReadInt32();
             Y = message.ReadInt32();
         }
@@ -53,6 +56,7 @@ namespace MMORL.Shared.Net
             message.Write(type);
             message.Write(Sprite);
             message.Write((byte)Color);
+            message.Write(Speed);
             message.Write(X);
             message.Write(Y);
         }

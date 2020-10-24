@@ -45,6 +45,13 @@ namespace MMORL.Client.Net
                         _gameWorld.Map.LoadChunk(message.Chunk);
                         break;
                     }
+                case MessageType.MoveEntity:
+                    {
+                        MoveEntityMessage message = new MoveEntityMessage();
+                        message.Read(data);
+                        _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
+                        break;
+                    }
                 case MessageType.SpawnEntity:
                     {
                         SpawnEntityMessage message = new SpawnEntityMessage();
@@ -55,10 +62,10 @@ namespace MMORL.Client.Net
                         switch (message.EntityType)
                         {
                             case EntityType.LocalPlayer:
-                                entity = new LocalPlayer(message.EntityId, message.Name, message.Sprite, message.Color);
+                                entity = new LocalPlayer(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed, _client);
                                 break;
                             case EntityType.Player:
-                                entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color);
+                                entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed);
                                 break;
                             default:
                                 Console.WriteLine($"Unhandled entity type: {message.EntityId}");

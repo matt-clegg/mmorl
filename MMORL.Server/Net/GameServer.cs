@@ -42,6 +42,8 @@ namespace MMORL.Server.Net
                 switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
+                        MessageType type = (MessageType)message.ReadByte();
+                        messageHandler.OnDataReceived(type, message);
                         break;
                     case NetIncomingMessageType.StatusChanged:
                         NetConnectionStatus status = (NetConnectionStatus)message.ReadByte();
@@ -90,6 +92,12 @@ namespace MMORL.Server.Net
                 }
                 _server.Recycle(message);
             }
+        }
+
+        public void SendMessageToAll(IMessage message, NetDeliveryMethod deliveryMethod)
+        {
+            NetOutgoingMessage outgoing = WriteMessage(message);
+            _server.SendToAll(outgoing, deliveryMethod);
         }
 
         public void SendMessage(IMessage message, NetConnection connection, NetDeliveryMethod deliveryMethod)

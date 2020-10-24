@@ -1,8 +1,9 @@
-﻿using MMORL.Shared;
+﻿using MMORL.Server.Actions;
+using MMORL.Server.Entities;
+using MMORL.Shared;
+using MMORL.Shared.Entities;
 using MMORL.Shared.World;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MMORL.Server.World
 {
@@ -11,7 +12,7 @@ namespace MMORL.Server.World
         private readonly float _turnTime;
         private float _time;
 
-        public ServerWorld(Map map, float turnTime) : base(map) 
+        public ServerWorld(Map map, float turnTime) : base(map)
         {
             _turnTime = turnTime;
         }
@@ -20,7 +21,7 @@ namespace MMORL.Server.World
         {
             _time += delta;
 
-            if(_time >= _turnTime)
+            if (_time >= _turnTime)
             {
                 _time -= _time;
                 DoTurn();
@@ -31,6 +32,22 @@ namespace MMORL.Server.World
 
         private void DoTurn()
         {
+            foreach (Entity entity in Map.Entities)
+            {
+                entity.ProcessTurn();
+            }
+        }
+
+        public void QueueMovement(int entityId, int x, int y)
+        {
+            foreach (Entity entity in Map.Entities)
+            {
+                // TODO: Ain't great, fix perhaps?
+                if (entity.Id == entityId && entity is ServerEntity serverEntity)
+                {
+                    serverEntity.QueueAction(new MoveAction(x, y));
+                }
+            }
         }
     }
 }

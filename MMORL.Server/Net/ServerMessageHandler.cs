@@ -1,7 +1,10 @@
 ﻿using Lidgren.Network;
+using MMORL.Server.Entities;
+using MMORL.Server.World;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
 using System;
@@ -14,9 +17,9 @@ namespace MMORL.Server.Net
     public class ServerMessageHandler : IMessageHandler
     {
         private readonly GameServer _server;
-        private readonly GameWorld _gameWorld;
+        private readonly ServerWorld _gameWorld;
 
-        public ServerMessageHandler(GameServer server, GameWorld gameWorld)
+        public ServerMessageHandler(GameServer server, ServerWorld gameWorld)
         {
             _server = server;
             _gameWorld = gameWorld;
@@ -26,6 +29,14 @@ namespace MMORL.Server.Net
         {
             switch (type)
             {
+                case MessageType.QueueMovement:
+                    {
+                        QueueMovementMessage message = new QueueMovementMessage();
+                        message.Read(data);
+
+                        _gameWorld.QueueMovement(message.EntityId, message.X, message.Y);
+                        break;
+                    }
                 default:
                     Console.WriteLine($"Unknown message type: {type}");
                     break;
@@ -42,7 +53,7 @@ namespace MMORL.Server.Net
 
             Map map = _gameWorld.Map;
 
-            Entity player = new Entity(map.Entities.Count, "player", "player", GameColor.Light);
+            ServerEntity player = new ServerEntity(map.Entities.Count, "player", "player", GameColor.Light, Energy.NormalSpeed, _server);
             _gameWorld.AddEntity(player, 0, 2);
 
             SpawnEntityMessage spawnLocalPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.LocalPlayer);

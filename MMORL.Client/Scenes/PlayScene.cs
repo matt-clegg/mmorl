@@ -33,6 +33,8 @@ namespace MMORL.Client.Scenes
         public override void Update(float delta)
         {
             base.Update(delta);
+            _player?.Update(delta);
+            _gameWorld.Update(delta);
         }
 
         public override void Unload()

@@ -23,7 +23,7 @@ namespace MMORL.Server
 
             Map map = MapLoader.LoadFromFile("Data/export.dat", chunkSize);
 
-            const float turnTime = 1f;
+            const float turnTime = 0.25f;
 
             _gameWorld = new ServerWorld(map, turnTime);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
