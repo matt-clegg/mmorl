@@ -1,0 +1,57 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "overworld.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInEditor": 1.5
+        },
+        "overworld.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": -226,
+                "y": -250
+            }
+        },
+        "overworld.tmx#swatch": {
+            "scaleInDock": 1
+        },
+        "overworld.tmx#terrain": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "map.fixedSize": false,
+    "map.height": 10,
+    "map.lastUsedExportFilter": "JSON map files (*.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.layerDataFormat": 5,
+    "map.orientation": 1,
+    "map.tileHeight": 24,
+    "map.tileWidth": 16,
+    "map.width": 10,
+    "openFiles": [
+        "overworld.tmx"
+    ],
+    "project": "",
+    "property.type": "bool",
+    "recentFiles": [
+        "overworld.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 24,
+        "width": 16
+    },
+    "tileset.transparentColor": "#ff00ff",
+    "tileset.type": 0,
+    "tileset.useTransparentColor": false
+}
