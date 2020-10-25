@@ -37,5 +37,11 @@ namespace MMORL.Shared.Entities
         {
 
         }
+
+        public virtual void Move(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 }

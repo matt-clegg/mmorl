@@ -1,6 +1,6 @@
 ﻿using Lidgren.Network;
+using MMORL.Server.Entities;
 using MMORL.Server.Net;
-using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
 
 namespace MMORL.Server.Actions
@@ -16,10 +16,9 @@ namespace MMORL.Server.Actions
             Y = y;
         }
 
-        public override void Perform(Entity entity, GameServer server)
+        public override void Perform(ServerEntity entity, GameServer server)
         {
-            entity.X = X;
-            entity.Y = Y;
+            entity.Move(X, Y);
 
             MoveEntityMessage message = new MoveEntityMessage(entity.Id, entity.X, entity.Y);
             server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);

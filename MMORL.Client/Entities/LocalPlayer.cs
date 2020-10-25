@@ -5,6 +5,7 @@ using MMORL.Client.Util;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net.Messages;
 using MMORL.Shared.Util;
+using System;
 using System.Collections.Generic;
 using Toolbox;
 
@@ -18,6 +19,12 @@ namespace MMORL.Client.Entities
         private readonly Queue<Point2D> _movementToSend = new Queue<Point2D>();
 
         private readonly GameClient _client;
+
+        public event EventHandler<Point2D> MoveEvent;
+        public event EventHandler<Point2D> ChunkChangedEvent;
+
+        public Point2D CurrentChunk { get; private set; }
+        public Point2D LastChunk { get; private set; }
 
         //private int _lastDx;
         //private int _lastDy;
@@ -33,6 +40,8 @@ namespace MMORL.Client.Entities
             else if (Controls.South.IsPressed(key)) QueueMove(0, 1);
             else if (Controls.East.IsPressed(key)) QueueMove(1, 0);
             else if (Controls.West.IsPressed(key)) QueueMove(-1, 0);
+
+            else if (Controls.Rest.IsPressed(key)) ClearQueuedMoves();
         }
 
         public void Update(float delta)
@@ -43,6 +52,31 @@ namespace MMORL.Client.Entities
                 QueueMovementMessage message = new QueueMovementMessage(Id, next.X, next.Y);
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
+        }
+
+        public override void Move(int x, int y)
+        {
+            for (int i = 0; i < _movementQueue.Count; i++)
+            {
+                if (_movementQueue[i] == new Point2D(x, y))
+                {
+                    _movementQueue.RemoveAt(i);
+                    break;
+                }
+            }
+
+            Point2D newChunk = Map.ToChunkCoords(x, y); ;
+
+            if (CurrentChunk != newChunk)
+            {
+                ChunkChangedEvent?.Invoke(this, newChunk);
+                LastChunk = CurrentChunk;
+            }
+            CurrentChunk = newChunk;
+
+
+            MoveEvent?.Invoke(this, new Point2D(x, y));
+            base.Move(x, y);
         }
 
         private void QueueMove(int dx, int dy)
@@ -90,10 +124,22 @@ namespace MMORL.Client.Entities
             }
 
             Point2D toQueue = next + new Point2D(dx, dy);
-            if (!Map.GetTile(toQueue.X, toQueue.Y).IsSolid)
+            if (!Map.GetTile(toQueue.X, toQueue.Y)?.IsSolid ?? false)
             {
                 _movementQueue.Add(toQueue);
                 _movementToSend.Enqueue(toQueue);
+            }
+        }
+
+        private void ClearQueuedMoves()
+        {
+            if (_movementQueue.Count > 0)
+            {
+                _movementQueue.Clear();
+                _movementToSend.Clear();
+
+                ClearMovesMessage message = new ClearMovesMessage(Id);
+                _client.SendMessage(message, NetDeliveryMethod.ReliableUnordered);
             }
         }
     }

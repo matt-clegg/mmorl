@@ -8,6 +8,7 @@
         QueueMovement,
         MapInformation,
         RequestChunk,
-        ChunkData
+        ChunkData,
+        ClearMoves
     }
 }

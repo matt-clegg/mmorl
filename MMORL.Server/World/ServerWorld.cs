@@ -3,7 +3,6 @@ using MMORL.Server.Entities;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.World;
-using System;
 
 namespace MMORL.Server.World
 {
@@ -46,6 +45,20 @@ namespace MMORL.Server.World
                 if (entity.Id == entityId && entity is ServerEntity serverEntity)
                 {
                     serverEntity.QueueAction(new MoveAction(x, y));
+                    return;
+                }
+            }
+        }
+
+        public void ClearMoves(int entityId)
+        {
+            foreach (Entity entity in Map.Entities)
+            {
+                // TODO: Ain't great, fix perhaps?
+                if (entity.Id == entityId && entity is ServerEntity serverEntity)
+                {
+                    serverEntity.ClearMoves();
+                    return;
                 }
             }
         }

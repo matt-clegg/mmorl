@@ -1,6 +1,9 @@
 ﻿using Lidgren.Network;
+using MMORL.Server.Entities;
 using MMORL.Shared.Net;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MMORL.Server.Net
 {
@@ -9,6 +12,8 @@ namespace MMORL.Server.Net
         public int Port { get; }
 
         private readonly NetServer _server;
+
+        private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
 
         public GameServer(int port)
         {
@@ -92,6 +97,31 @@ namespace MMORL.Server.Net
                 }
                 _server.Recycle(message);
             }
+        }
+
+        public void AddNewPlayerConnection(NetConnection netConnection, ServerEntity player)
+        {
+            _playerConnections.Add(new PlayerNetConnection(netConnection, player));
+        }
+
+        public void RemovePlayerConnection(NetConnection netConnection)
+        {
+            _playerConnections.RemoveAll(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier);
+        }
+
+        public void RemovePlayerConnection(ServerEntity player)
+        {
+            _playerConnections.RemoveAll(con => con.Player.Id == player.Id);
+        }
+
+        public NetConnection GetConnectionForPlayer(ServerEntity player)
+        {
+            return _playerConnections.FirstOrDefault(con => con.Player.Id == player.Id).NetConnection;
+        }
+
+        public ServerEntity GetPlayerFromConnection(NetConnection netConnection)
+        {
+            return _playerConnections.FirstOrDefault(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier).Player;
         }
 
         public void SendMessageToAll(IMessage message, NetDeliveryMethod deliveryMethod)

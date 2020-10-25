@@ -27,6 +27,8 @@
             "scaleInEditor": 1
         }
     },
+    "frame.defaultDuration": 125,
+    "lastUsedTilesetExportFilter": "All Files (*)",
     "map.fixedSize": false,
     "map.height": 10,
     "map.lastUsedExportFilter": "JSON map files (*.json)",

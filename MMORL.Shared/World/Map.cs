@@ -39,8 +39,8 @@ namespace MMORL.Shared.World
             {
                 if (entity.Id == id)
                 {
-                    entity.X = x;
-                    entity.Y = y;
+                    entity.Move(x, y);
+                    return;
                 }
             }
         }
@@ -49,7 +49,10 @@ namespace MMORL.Shared.World
         {
             Point2D chunkPos = ToChunkCoords(x, y);
             Chunk chunk = GetChunk(chunkPos.X, chunkPos.Y);
-            return chunk?.GetTile(Math.Abs(x % ChunkSize), Math.Abs(y % ChunkSize));
+
+            Point2D localChunk = ToLocalChunkCoords(x, y);
+
+            return chunk?.GetTile(localChunk.X, localChunk.Y);
         }
 
         public void LoadChunk(Chunk chunk)
@@ -108,6 +111,24 @@ namespace MMORL.Shared.World
             }
 
             return new Point2D(chunkX, chunkY);
+        }
+
+        public Point2D ToLocalChunkCoords(int x, int y)
+        {
+            int localX = Math.Abs(x % ChunkSize);
+            int localY = Math.Abs(y % ChunkSize);
+
+            if (x < 0 && localX != 0)
+            {
+                localX = ChunkSize - localX;
+            }
+
+            if (y < 0 && localY != 0)
+            {
+                localY = ChunkSize - localY;
+            }
+
+            return new Point2D(localX, localY);
         }
     }
 }

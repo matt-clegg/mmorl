@@ -1,7 +1,6 @@
 ﻿using Lidgren.Network;
 using MMORL.Server.Entities;
 using MMORL.Server.World;
-using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
 using MMORL.Shared.Net.Messages;
@@ -37,6 +36,14 @@ namespace MMORL.Server.Net
                         _gameWorld.QueueMovement(message.EntityId, message.X, message.Y);
                         break;
                     }
+                case MessageType.ClearMoves:
+                    {
+                        ClearMovesMessage message = new ClearMovesMessage();
+                        message.Read(data);
+
+                        _gameWorld.ClearMoves(message.EntityId);
+                        break;
+                    }
                 default:
                     Console.WriteLine($"Unknown message type: {type}");
                     break;
@@ -53,8 +60,15 @@ namespace MMORL.Server.Net
 
             Map map = _gameWorld.Map;
 
+            foreach (Entity other in map.Entities)
+            {
+                SpawnEntityMessage spawnExistingPlayer = new SpawnEntityMessage(other, other.X, other.Y, EntityType.Player);
+                _server.SendMessage(spawnExistingPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+            }
+
             ServerEntity player = new ServerEntity(map.Entities.Count, "player", "player", GameColor.Light, Energy.NormalSpeed, _server);
             _gameWorld.AddEntity(player, 0, 2);
+            _server.AddNewPlayerConnection(data.SenderConnection, player);
 
             SpawnEntityMessage spawnLocalPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.LocalPlayer);
             _server.SendMessage(spawnLocalPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
@@ -66,9 +80,9 @@ namespace MMORL.Server.Net
 
             Point2D chunkPos = map.ToChunkCoords(player.X, player.Y);
 
-            for (int y = -1; y <= 1; y++)
+            for (int x = -2; x <= 2; x++)
             {
-                for (int x = -1; x <= 1; x++)
+                for (int y = -1; y <= 1; y++)
                 {
                     Chunk chunk = map.GetChunk(chunkPos.X + x, chunkPos.Y + y);
                     if (chunk != null)
@@ -81,6 +95,7 @@ namespace MMORL.Server.Net
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            _server.RemovePlayerConnection(data.SenderConnection);
         }
 
         private void SendChunk(Chunk chunk, NetIncomingMessage data)

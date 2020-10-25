@@ -2,8 +2,12 @@
 using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Entities;
 using MMORL.Client.Renderers;
+using MMORL.Client.Util;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using Toolbox;
 
 namespace MMORL.Client.Scenes
 {
@@ -23,6 +27,7 @@ namespace MMORL.Client.Scenes
 
             _mapRenderer = new MapRenderer(_gameWorld.Map, Camera);
             Add(_mapRenderer);
+            Add(new UiRenderer());
         }
 
         public override void Input(Keys key)
@@ -33,7 +38,15 @@ namespace MMORL.Client.Scenes
         public override void Update(float delta)
         {
             base.Update(delta);
-            _player?.Update(delta);
+
+            if (_player != null)
+            {
+                Camera.Approach(new Vector2(_player.X * Game.SpriteWidth + (Game.SpriteWidth / 2),
+                                 _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2)), 0.1f);
+
+                _player.Update(delta);
+            }
+
             _gameWorld.Update(delta);
         }
 
@@ -41,16 +54,45 @@ namespace MMORL.Client.Scenes
         {
             base.Unload();
             _gameWorld.EntityAddedEvent -= OnEntityAdded;
+            if (_player != null)
+            {
+                _player.ChunkChangedEvent -= OnPlayerChunkChange;
+            }
         }
 
         private void OnEntityAdded(object sender, Entity entity)
         {
-            if(entity is LocalPlayer player)
+            if (entity is LocalPlayer player)
             {
                 _player = player;
+                _player.MoveEvent += OnPlayerChunkChange;
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
                 Camera.Y = _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2);
             }
+        }
+
+        private void OnPlayerChunkChange(object sender, Point2D position)
+        {
+            Point2D chunkPos = _gameWorld.Map.ToChunkCoords(position.X, position.Y);
+
+            HashSet<Point2D> safeChunks = new HashSet<Point2D>();
+
+            for (int x = -2; x <= 2; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    safeChunks.Add(chunkPos + new Point2D(x, y));
+                }
+            }
+
+            foreach (Point2D allChunks in _gameWorld.Map.Chunks.Select(c => new Point2D(c.X, c.Y)))
+            {
+                if (!safeChunks.Contains(allChunks))
+                {
+                    _gameWorld.Map.UnloadChunk(allChunks.X, allChunks.Y);
+                }
+            }
+
         }
     }
 }

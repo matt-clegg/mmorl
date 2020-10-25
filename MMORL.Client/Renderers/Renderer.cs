@@ -24,14 +24,17 @@ namespace MMORL.Client.Renderers
         public int BoundsWidth => (int)Camera.Viewport.Width;
         public int BoundsHeight => (int)Camera.Viewport.Height;
 
-        public Renderer(Camera camera)
+        public Renderer(Camera camera = null)
         {
             BlendState = BlendState.AlphaBlend;
             SamplerState = SamplerState.PointClamp;
             DepthStencilState = DepthStencilState.None;
             RasterizerState = RasterizerState.CullNone;
             SortMode = SpriteSortMode.Immediate;
-            Camera = camera;
+            Camera = camera ?? new Camera
+            {
+                Zoom = 1f
+            };
 
             IsVisible = true;
         }

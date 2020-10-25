@@ -32,6 +32,7 @@ namespace TiledParser
 
             watch.Stop();
             Console.WriteLine($"Completed in: {watch.ElapsedMilliseconds}ms");
+            Console.ReadLine();
         }
 
         private static Map ParseMap(string path)

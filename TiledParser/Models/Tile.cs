@@ -15,7 +15,7 @@ namespace TiledParser.Models
 
         public bool HasProperty(string key)
         {
-            return Properties.Any(p => p.Name.Equals(key));
+            return Properties?.Any(p => p.Name.Equals(key)) ?? false;
         }
     }
 }
