@@ -71,18 +71,20 @@ namespace MMORL.Client.Util
 
         public static void TextCentered(SpriteFont font, string text, Vector2 position)
         {
-            Text(font, text, position - (font.MeasureString(text) * 0.5f / Engine.ViewScale), Color.White);
+            Text(font, text, position - (font.MeasureString(text) * 0.5f), Color.White);
         }
 
         public static void TextCentered(SpriteFont font, string text, Vector2 position, Color color)
         {
-            Text(font, text, position - (font.MeasureString(text) * 0.5f / Engine.ViewScale), color);
+            Vector2 dif = font.MeasureString(text);
+
+            Text(font, text, position - (font.MeasureString(text) * 0.5f), color);
         }
 
         internal static void Initialize(GraphicsDevice graphicsDevice)
         {
             SpriteBatch = new SpriteBatch(graphicsDevice);
-            DefaultFont = Engine.Instance.Content.Load<SpriteFont>("Default");
+            DefaultFont = Engine.Instance.Content.Load<SpriteFont>("Fonts/Default");
             UseDebugPixelTexture(graphicsDevice);
         }
     }

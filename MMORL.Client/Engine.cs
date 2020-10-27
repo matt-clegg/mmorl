@@ -56,7 +56,7 @@ namespace MMORL.Client
         {
             Instance = this;
             Assets = new AssetStore<string>();
-            ClearColor = Color.FromNonPremultiplied(10, 10, 10, 255);
+            ClearColor = Color.FromNonPremultiplied(20, 20, 20, 255);
 
             Width = width;
             Height = height;

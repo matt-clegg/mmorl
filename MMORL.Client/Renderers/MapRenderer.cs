@@ -7,6 +7,7 @@ using MMORL.Shared.Util;
 using MMORL.Shared.World;
 using Toolbox;
 using Toolbox.Graphics;
+using Camera = MMORL.Client.Util.Camera;
 
 namespace MMORL.Client.Renderers
 {
@@ -29,7 +30,7 @@ namespace MMORL.Client.Renderers
         {
             foreach (Chunk chunk in _map.Chunks)
             {
-                RenderChunk(chunk, true);
+                RenderChunk(chunk);
             }
 
             foreach (Entity entity in _map.Entities)

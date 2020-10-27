@@ -40,6 +40,7 @@ namespace MMORL.Shared.Net
         public void Read(NetIncomingMessage message)
         {
             EntityId = message.ReadInt32();
+            Name = message.ReadString();
             EntityType = (EntityType)message.ReadByte();
             Sprite = message.ReadString();
             Color = (GameColor)message.ReadByte();
@@ -53,6 +54,7 @@ namespace MMORL.Shared.Net
             byte type = (byte)EntityType;
 
             message.Write(EntityId);
+            message.Write(Name);
             message.Write(type);
             message.Write(Sprite);
             message.Write((byte)Color);

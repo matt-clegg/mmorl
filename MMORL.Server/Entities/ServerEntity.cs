@@ -36,7 +36,9 @@ namespace MMORL.Server.Entities
             {
                 if (_actions.Count > 0)
                 {
-                    _actions.Dequeue().Perform(this, _server);
+                    BaseAction action = _actions.Dequeue();
+                    action.Perform(this, _server);
+                    _server.Pool.Recycle(action);
                 }
 
                 Energy.Spend();
@@ -49,7 +51,6 @@ namespace MMORL.Server.Entities
 
             if (CurrentChunk != newChunk)
             {
-                //ChunkChangedEvent?.Invoke(this, newChunk);
                 OnChunkChanged();
                 LastChunk = CurrentChunk;
             }

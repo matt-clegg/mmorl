@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using TiledParser.Models;
 
@@ -48,7 +50,8 @@ namespace TiledParser
             Console.WriteLine("Exporting map");
 
             using (FileStream stream = new FileStream(output, FileMode.Create))
-            using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8))
+            using (GZipStream gZip = new GZipStream(stream, CompressionLevel.Optimal))
+            using (BinaryWriter writer = new BinaryWriter(gZip, Encoding.UTF8))
             {
                 WriteTileDefinitions(map, writer);
                 WriteChunkData(map, writer);
@@ -60,10 +63,52 @@ namespace TiledParser
             Tileset terrainTileset = map.GetTilesetByName("terrain");
 
             List<Tile> tiles = terrainTileset.Tiles;
-
-            writer.Write((ushort)tiles.Count);
+            List<Tile> tilesToRegister = new List<Tile>();
 
             foreach (Tile tile in tiles)
+            {
+                tilesToRegister.Add(tile);
+            }
+
+            Layer terrainLayer = map.GetLayerByName("tiles");
+            ushort terrainFirstId = terrainTileset.FirstGid;
+
+            foreach (Chunk chunk in terrainLayer.Chunks)
+            {
+                int chunkSize = chunk.Width;
+
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    for (int y = 0; y < chunkSize; y++)
+                    {
+                        int index = x + y * chunkSize;
+
+                        ushort tileId = (ushort)chunk.Data[index];
+                        if (tileId != 0)
+                        {
+                            tileId -= terrainFirstId;
+                        }
+
+                        if (!tilesToRegister.Any(t => t.Id == tileId))
+                        {
+                            Tile tile = new Tile
+                            {
+                                Id = tileId,
+                                Properties = new List<TileProperty>
+                                {
+                                    new TileProperty { Name = "isSolid", Value = "false" },
+                                    new TileProperty { Name = "isTransparent", Value = "true" }
+                                }
+                            };
+                            tilesToRegister.Add(tile);
+                        }
+                    }
+                }
+            }
+
+            writer.Write((ushort)tilesToRegister.Count);
+
+            foreach (Tile tile in tilesToRegister)
             {
                 writer.Write(tile.Id);
 
@@ -101,7 +146,7 @@ namespace TiledParser
 
             foreach (Chunk chunk in terrainLayer.Chunks)
             {
-                if(chunk.Width != chunk.Height)
+                if (chunk.Width != chunk.Height)
                 {
                     throw new InvalidOperationException($"Chunk size is not square: {chunk.Width}x{chunk.Height}");
                 }
@@ -134,6 +179,11 @@ namespace TiledParser
                         if (colorId != 0)
                         {
                             colorId -= colorFirstId;
+                        }
+
+                        if (!_registeredTiled.Contains(tileId))
+                        {
+                            throw new InvalidOperationException("Unknown tile ID: " + tileId + ".  Maybe add custom properties in Tiled.");
                         }
 
                         writer.Write(tileId);

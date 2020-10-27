@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Entities;
+using MMORL.Client.Net;
 using MMORL.Client.Renderers;
 using MMORL.Client.Util;
 using MMORL.Shared;
@@ -18,7 +19,7 @@ namespace MMORL.Client.Scenes
 
         private LocalPlayer _player;
 
-        public PlayScene(GameWorld gameWorld)
+        public PlayScene(GameWorld gameWorld, GameClient client)
         {
             _gameWorld = gameWorld;
             _gameWorld.EntityAddedEvent += OnEntityAdded;
@@ -27,7 +28,7 @@ namespace MMORL.Client.Scenes
 
             _mapRenderer = new MapRenderer(_gameWorld.Map, Camera);
             Add(_mapRenderer);
-            Add(new UiRenderer());
+            Add(new UiRenderer(client.Statistics, _gameWorld, Camera));
         }
 
         public override void Input(Keys key)

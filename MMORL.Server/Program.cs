@@ -22,6 +22,8 @@ namespace MMORL.Server
             {
                 Console.WriteLine($"Server exception: {ex.Message}");
             }
+
+            Console.ReadLine();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MMORL.Server.Actions;
 using MMORL.Server.Entities;
+using MMORL.Server.Net;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.World;
@@ -11,9 +12,12 @@ namespace MMORL.Server.World
         private readonly float _turnTime;
         private float _time;
 
-        public ServerWorld(Map map, float turnTime) : base(map)
+        private readonly GameServer _server;
+
+        public ServerWorld(Map map, float turnTime, GameServer server) : base(map)
         {
             _turnTime = turnTime;
+            _server = server;
         }
 
         public override void Update(float delta)
@@ -44,7 +48,11 @@ namespace MMORL.Server.World
                 // TODO: Ain't great, fix perhaps?
                 if (entity.Id == entityId && entity is ServerEntity serverEntity)
                 {
-                    serverEntity.QueueAction(new MoveAction(x, y));
+                    MoveAction action = _server.Pool.Create<MoveAction>();
+                    action.X = x;
+                    action.Y = y;
+
+                    serverEntity.QueueAction(action);
                     return;
                 }
             }

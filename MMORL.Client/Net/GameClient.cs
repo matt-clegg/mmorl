@@ -13,6 +13,8 @@ namespace MMORL.Client.Net
 
         public NetConnectionStatus ClientStatus { get; private set; }
 
+        public NetPeerStatistics Statistics => _client.Statistics;
+
         public GameClient(string host, int port)
         {
             Host = host;

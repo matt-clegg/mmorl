@@ -8,6 +8,9 @@ namespace MMORL.Client.Data
         {
             SpritesheetLoader.Load(Engine.Assets);
             SpriteLoader.Load(Engine.Assets);
+
+            SpriteFont large = Engine.Instance.Content.Load<SpriteFont>("Fonts/Large");
+            Engine.Assets.AddAsset("large", large);
         }
 
         public static Texture2D LoadTexture(string path)

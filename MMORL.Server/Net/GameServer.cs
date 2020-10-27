@@ -4,6 +4,7 @@ using MMORL.Shared.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Toolbox;
 
 namespace MMORL.Server.Net
 {
@@ -15,9 +16,13 @@ namespace MMORL.Server.Net
 
         private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
 
+        public Pool Pool { get; private set; }
+
         public GameServer(int port)
         {
             Port = port;
+
+            Pool = new Pool();
 
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
             config.Port = port;
@@ -128,6 +133,12 @@ namespace MMORL.Server.Net
         {
             NetOutgoingMessage outgoing = WriteMessage(message);
             _server.SendToAll(outgoing, deliveryMethod);
+        }
+
+        public void SendMessageToAllExcept(IMessage message, NetConnection except, NetDeliveryMethod deliveryMethod)
+        {
+            NetOutgoingMessage outgoing = WriteMessage(message);
+            _server.SendToAll(outgoing, except, deliveryMethod, 0);
         }
 
         public void SendMessage(IMessage message, NetConnection connection, NetDeliveryMethod deliveryMethod)

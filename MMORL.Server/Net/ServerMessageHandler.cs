@@ -55,6 +55,8 @@ namespace MMORL.Server.Net
 
             /**
              * TODO
+             * Load player information from db
+             * If player is new, create db info
              * 
              */
 
@@ -66,12 +68,16 @@ namespace MMORL.Server.Net
                 _server.SendMessage(spawnExistingPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
             }
 
-            ServerEntity player = new ServerEntity(map.Entities.Count, "player", "player", GameColor.Light, Energy.NormalSpeed, _server);
+            int id = map.Entities.Count;
+            ServerEntity player = new ServerEntity(id, $"player_{id}", "player", GameColor.Light, Energy.NormalSpeed, _server);
             _gameWorld.AddEntity(player, 0, 2);
             _server.AddNewPlayerConnection(data.SenderConnection, player);
 
             SpawnEntityMessage spawnLocalPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.LocalPlayer);
             _server.SendMessage(spawnLocalPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+
+            SpawnEntityMessage spawnOtherPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.Player);
+            _server.SendMessageToAllExcept(spawnOtherPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
 
             List<Tile> tiles = Tile.RegisteredTiles.ToList();
 

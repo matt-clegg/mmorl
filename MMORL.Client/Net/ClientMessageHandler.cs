@@ -7,6 +7,7 @@ using MMORL.Shared.Net;
 using MMORL.Shared.World;
 using System;
 using System.Linq;
+using Toolbox;
 
 namespace MMORL.Client.Net
 {
@@ -14,6 +15,8 @@ namespace MMORL.Client.Net
     {
         private readonly GameClient _client;
         private readonly GameWorld _gameWorld;
+
+        private readonly Pool _messagePool = new Pool();
 
         public ClientMessageHandler(GameClient client, GameWorld gameWorld)
         {
@@ -40,16 +43,18 @@ namespace MMORL.Client.Net
                     }
                 case MessageType.ChunkData:
                     {
-                        ChunkDataMessage message = new ChunkDataMessage();
+                        ChunkDataMessage message = _messagePool.Create<ChunkDataMessage>();
                         message.Read(data);
                         _gameWorld.Map.LoadChunk(message.Chunk);
+                        _messagePool.Recycle(message);
                         break;
                     }
                 case MessageType.MoveEntity:
                     {
-                        MoveEntityMessage message = new MoveEntityMessage();
+                        MoveEntityMessage message = _messagePool.Create<MoveEntityMessage>();
                         message.Read(data);
                         _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
+                        _messagePool.Recycle(message);
                         break;
                     }
                 case MessageType.SpawnEntity:

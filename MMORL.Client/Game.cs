@@ -76,7 +76,7 @@ namespace MMORL.Client
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    Scene = new PlayScene(_gameWorld);
+                    Scene = new PlayScene(_gameWorld, _client);
                     break;
             }
         }

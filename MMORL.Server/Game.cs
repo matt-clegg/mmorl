@@ -25,7 +25,7 @@ namespace MMORL.Server
 
             const float turnTime = 0.25f;
 
-            _gameWorld = new ServerWorld(map, turnTime);
+            _gameWorld = new ServerWorld(map, turnTime, _server);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
         }
 

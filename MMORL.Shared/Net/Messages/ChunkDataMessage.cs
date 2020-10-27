@@ -1,10 +1,11 @@
 ﻿using Lidgren.Network;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
+using Toolbox;
 
 namespace MMORL.Shared.Net
 {
-    public class ChunkDataMessage : IMessage
+    public class ChunkDataMessage : Poolable, IMessage
     {
         public MessageType Type => MessageType.ChunkData;
 
@@ -52,6 +53,11 @@ namespace MMORL.Shared.Net
                     message.Write((byte)Chunk.GetColor(x, y));
                 }
             }
+        }
+
+        public override void Recycle()
+        {
+            Chunk = null;
         }
     }
 }
