@@ -9,7 +9,7 @@ namespace MMORL.Server
             const int port = 25565;
             const int chunkSize = 16;
 
-            const int updateRateMs = 16;
+            const int updateRateMs = 60;
 
             Game game = new Game(port, chunkSize);
 

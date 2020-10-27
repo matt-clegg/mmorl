@@ -7,30 +7,44 @@ namespace MMORL.Server
     public class ServerRunner
     {
         private readonly Game _game;
-        private readonly int _updateRateMs;
+        private readonly int _updatesPerSecond;
 
         public bool Running { get; private set; }
 
-        public ServerRunner(Game game, int updateRateMs)
+        private static readonly DateTime UnixStart = new DateTime(1970, 1, 1, 0, 0, 0);
+
+        public ServerRunner(Game game, int updatesPerSecond)
         {
             _game = game;
-            _updateRateMs = updateRateMs;
+            _updatesPerSecond = updatesPerSecond;
         }
 
         public void Run()
         {
             Running = true;
 
-            float lastTime = NanoTime();
+            double time = 0.0;
+            double delta = 1 / (double)_updatesPerSecond;
+
+            double currentTime = TimeInSeconds();
+            double accumulator = 0.0;
 
             while (Running)
             {
-                float delta = NanoTime() - lastTime;
-                lastTime += delta;
+                double newTime = TimeInSeconds();
+                double frameTime = newTime - currentTime;
+                currentTime = newTime;
 
-                // TODO: Improve this timing loop
-                Update(delta / 1000000000f);
-                Thread.Sleep(_updateRateMs);
+                accumulator += frameTime;
+
+                while (accumulator >= delta)
+                {
+                    Update((float)delta);
+                    accumulator -= delta;
+                    time += delta;
+                }
+
+                Thread.Sleep(1);
             }
         }
 
@@ -39,12 +53,10 @@ namespace MMORL.Server
             _game.Update(delta);
         }
 
-        private long NanoTime()
+        private double TimeInSeconds()
         {
-            long nano = 10000L * Stopwatch.GetTimestamp();
-            nano /= TimeSpan.TicksPerMillisecond;
-            nano *= 100L;
-            return nano;
+            TimeSpan timeSpan = DateTime.UtcNow - UnixStart;
+            return timeSpan.TotalSeconds;
         }
     }
 }

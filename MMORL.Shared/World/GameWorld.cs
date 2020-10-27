@@ -30,5 +30,10 @@ namespace MMORL.Shared
             Map.Add(entity, x, y);
             EntityAddedEvent?.Invoke(this, entity);
         }
+
+        public void RemoveEntity(int entityId)
+        {
+            Map.Remove(entityId);
+        }
     }
 }

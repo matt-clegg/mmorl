@@ -101,6 +101,13 @@ namespace MMORL.Server.Net
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            ServerEntity toRemove = _server.GetPlayerFromConnection(data.SenderConnection);
+
+            if (toRemove != null)
+            {
+                RemoveEntityMessage removeEntityMessage = new RemoveEntityMessage(toRemove.Id);
+                _server.SendMessageToAllExcept(removeEntityMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+            }
             _server.RemovePlayerConnection(data.SenderConnection);
         }
 

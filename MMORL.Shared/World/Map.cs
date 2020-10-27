@@ -33,6 +33,11 @@ namespace MMORL.Shared.World
             _entities.Add(entity);
         }
 
+        public void Remove(int entityId)
+        {
+            _entities.RemoveAll(e => e.Id == entityId);
+        }
+
         public void MoveEntity(int id, int x, int y)
         {
             foreach (Entity entity in Entities)

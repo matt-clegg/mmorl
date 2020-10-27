@@ -4,6 +4,7 @@ using MMORL.Client.Entities;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using MMORL.Shared.World;
 using System;
 using System.Linq;
@@ -81,6 +82,15 @@ namespace MMORL.Client.Net
                         {
                             _gameWorld.AddEntity(entity, message.X, message.Y);
                         }
+                        break;
+                    }
+                case MessageType.RemoveEntity:
+                    {
+                        RemoveEntityMessage message = new RemoveEntityMessage();
+                        message.Read(data);
+
+                        _gameWorld.RemoveEntity(message.EntityId);
+
                         break;
                     }
                 default:

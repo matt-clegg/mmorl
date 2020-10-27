@@ -9,6 +9,7 @@
         MapInformation,
         RequestChunk,
         ChunkData,
-        ClearMoves
+        ClearMoves,
+        RemoveEntity
     }
 }
