@@ -52,7 +52,6 @@ namespace MMORL.Server.Net
 
         public void OnPlayerConnect(NetIncomingMessage data)
         {
-
             /**
              * TODO
              * Load player information from db
@@ -101,6 +100,17 @@ namespace MMORL.Server.Net
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            DisconnectPlayer(data);
+        }
+
+        private void SendChunk(Chunk chunk, NetIncomingMessage data)
+        {
+            ChunkDataMessage chunkDataMessage = new ChunkDataMessage(chunk);
+            _server.SendMessage(chunkDataMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+        }
+
+        private void DisconnectPlayer(NetIncomingMessage data)
+        {
             ServerEntity toRemove = _server.GetPlayerFromConnection(data.SenderConnection);
 
             if (toRemove != null)
@@ -109,12 +119,6 @@ namespace MMORL.Server.Net
                 _server.SendMessageToAllExcept(removeEntityMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
             }
             _server.RemovePlayerConnection(data.SenderConnection);
-        }
-
-        private void SendChunk(Chunk chunk, NetIncomingMessage data)
-        {
-            ChunkDataMessage chunkDataMessage = new ChunkDataMessage(chunk);
-            _server.SendMessage(chunkDataMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
         }
     }
 }

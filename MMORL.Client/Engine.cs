@@ -101,6 +101,13 @@ namespace MMORL.Client
             IsFixedTimeStep = true;
 
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+        }
+
+        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            _game.Dispose();
         }
 
         protected override void Initialize()

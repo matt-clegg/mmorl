@@ -1,6 +1,7 @@
 ﻿using Lidgren.Network;
 using MMORL.Shared.Net;
 using System;
+using System.Threading;
 
 namespace MMORL.Client.Net
 {
@@ -90,6 +91,18 @@ namespace MMORL.Client.Net
             outgoing.Write((byte)message.Type);
             message.Write(outgoing);
             _client.SendMessage(outgoing, deliveryMethod);
+        }
+
+        public void Disconnect()
+        {
+            const string reason = "client closed";
+            _client.Disconnect(reason);
+            _client.ServerConnection.Disconnect(reason);
+            _client.Shutdown(reason);
+            // Have to give the client thread time to shutdown properly before the
+            // game closes.
+            Thread.Sleep(100);
+            _client.FlushSendQueue();
         }
     }
 }

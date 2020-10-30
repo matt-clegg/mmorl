@@ -181,11 +181,6 @@ namespace TiledParser
                             colorId -= colorFirstId;
                         }
 
-                        if (!_registeredTiled.Contains(tileId))
-                        {
-                            throw new InvalidOperationException("Unknown tile ID: " + tileId + ".  Maybe add custom properties in Tiled.");
-                        }
-
                         writer.Write(tileId);
                         writer.Write(colorId);
                     }

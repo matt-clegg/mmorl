@@ -16,9 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMORL.Shared", "MMORL.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMORL.Server", "MMORL.Server\MMORL.Server.csproj", "{CE30E15E-2D1A-4A18-91BB-83A8CE910294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lidgren.Network.MultiTarget", "Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj", "{14088793-63AD-4443-88BE-3DE24137875A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledParser", "TiledParser\TiledParser.csproj", "{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledParser", "TiledParser\TiledParser.csproj", "{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lidgren.Network.MultiTarget", "Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj", "{59952265-74AA-4EBE-A1F0-1FBE701C32F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,14 +42,14 @@ Global
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59952265-74AA-4EBE-A1F0-1FBE701C32F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59952265-74AA-4EBE-A1F0-1FBE701C32F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59952265-74AA-4EBE-A1F0-1FBE701C32F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59952265-74AA-4EBE-A1F0-1FBE701C32F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,6 @@ using MMORL.Shared.Net.Messages;
 using MMORL.Shared.World;
 using System;
 using System.Linq;
-using Toolbox;
 
 namespace MMORL.Client.Net
 {
@@ -16,8 +15,6 @@ namespace MMORL.Client.Net
     {
         private readonly GameClient _client;
         private readonly GameWorld _gameWorld;
-
-        private readonly Pool _messagePool = new Pool();
 
         public ClientMessageHandler(GameClient client, GameWorld gameWorld)
         {
@@ -44,18 +41,16 @@ namespace MMORL.Client.Net
                     }
                 case MessageType.ChunkData:
                     {
-                        ChunkDataMessage message = _messagePool.Create<ChunkDataMessage>();
+                        ChunkDataMessage message = new ChunkDataMessage();
                         message.Read(data);
                         _gameWorld.Map.LoadChunk(message.Chunk);
-                        _messagePool.Recycle(message);
                         break;
                     }
                 case MessageType.MoveEntity:
                     {
-                        MoveEntityMessage message = _messagePool.Create<MoveEntityMessage>();
+                        MoveEntityMessage message = new MoveEntityMessage();
                         message.Read(data);
                         _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
-                        _messagePool.Recycle(message);
                         break;
                     }
                 case MessageType.SpawnEntity:
@@ -101,10 +96,13 @@ namespace MMORL.Client.Net
 
         public void OnPlayerConnect(NetIncomingMessage data)
         {
+            
         }
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            string reason = data.ReadString();
+            Console.WriteLine("disconnected: " + reason);
         }
     }
 }

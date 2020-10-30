@@ -121,12 +121,12 @@ namespace MMORL.Server.Net
 
         public NetConnection GetConnectionForPlayer(ServerEntity player)
         {
-            return _playerConnections.FirstOrDefault(con => con.Player.Id == player.Id).NetConnection;
+            return _playerConnections.FirstOrDefault(con => con.Player.Id == player.Id)?.NetConnection;
         }
 
         public ServerEntity GetPlayerFromConnection(NetConnection netConnection)
         {
-            return _playerConnections.FirstOrDefault(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier).Player;
+            return _playerConnections.FirstOrDefault(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier)?.Player;
         }
 
         public void SendMessageToAll(IMessage message, NetDeliveryMethod deliveryMethod)

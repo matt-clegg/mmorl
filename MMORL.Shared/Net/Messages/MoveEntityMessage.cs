@@ -1,9 +1,8 @@
 ﻿using Lidgren.Network;
-using Toolbox;
 
 namespace MMORL.Shared.Net
 {
-    public class MoveEntityMessage : Poolable, IMessage
+    public class MoveEntityMessage : IMessage
     {
         public MessageType Type => MessageType.MoveEntity;
 
@@ -32,13 +31,6 @@ namespace MMORL.Shared.Net
             message.Write(Id);
             message.Write(X);
             message.Write(Y);
-        }
-
-        public override void Recycle()
-        {
-            Id = 0;
-            X = 0;
-            Y = 0;
         }
     }
 }

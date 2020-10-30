@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace MMORL.Server
@@ -46,6 +45,14 @@ namespace MMORL.Server
 
                 Thread.Sleep(1);
             }
+
+            _game.Shutdown();
+        }
+
+        public void Stop()
+        {
+            Running = false;
+            _game.Shutdown();
         }
 
         private void Update(float delta)

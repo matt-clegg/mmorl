@@ -29,8 +29,8 @@ namespace MMORL.Client
 
         public Game()
         {
-            //const string host = "127.0.0.1";
-            const string host = "167.71.142.107";
+            const string host = "127.0.0.1";
+            //const string host = "167.71.142.107";
 
             const int port = 25565;
             const int chunkSize = 16;
@@ -89,6 +89,11 @@ namespace MMORL.Client
             GC.WaitForPendingFinalizers();
 
             Engine.TimeRate = 1f;
+        }
+
+        public void Dispose()
+        {
+            _client.Disconnect();
         }
 
     }

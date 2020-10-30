@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;net46;net461;net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net46;net461;net462;net48;netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1'">$(DefineConstants);HAS_FULL_SPAN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -76,6 +77,7 @@
     <Compile Include="..\Lidgren.Network\NetUnreliableUnorderedReceiver.cs" Link="NetUnreliableUnorderedReceiver.cs" />
     <Compile Include="..\Lidgren.Network\NetUPnP.cs" Link="NetUPnP.cs" />
     <Compile Include="..\Lidgren.Network\NetUtility.cs" Link="NetUtility.cs" />
+    <Compile Include="..\Lidgren.Network\NetUtility.Dns.cs" Link="NetUtility.Dns.cs" />
     <Compile Include="..\Lidgren.Network\Platform\PlatformWin32.cs" Link="Platform\PlatformWin32.cs" />
   </ItemGroup>
 
@@ -89,6 +91,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.5.4" Condition="'$(TargetFramework)' != 'netstandard2.1' and '$(TargetFramework)' != 'netcoreapp3.1'" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.1" Condition="'$(TargetFramework)' != 'netcoreapp3.1'" />
   </ItemGroup>
 
 </Project>

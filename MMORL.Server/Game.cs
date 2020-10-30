@@ -30,5 +30,10 @@ namespace MMORL.Server
             _server.Update(_messageHandler);
             _gameWorld.Update(delta);
         }
+
+        public void Shutdown()
+        {
+            _server.Shutdown();
+        }
     }
 }
