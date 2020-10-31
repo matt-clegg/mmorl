@@ -27,6 +27,18 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Large.spritefont
 
+#begin Textures/interface.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/interface.png
+
 #begin Textures/monsters.png
 /importer:TextureImporter
 /processor:TextureProcessor

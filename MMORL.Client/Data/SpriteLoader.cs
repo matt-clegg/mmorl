@@ -12,6 +12,29 @@ namespace MMORL.Client.Data
             LoadSprite("moveIndicator", 15, 9, 16, 24, "terrain", assets);
 
             LoadSprite("loading", 2, 10, 16, 24, "terrain", assets);
+
+            LoadSprite("panel_tl_a", 0, 0, 16, 24, "interface", assets);
+            LoadSprite("panel_tr_a", 1, 0, 16, 24, "interface", assets);
+            LoadSprite("panel_bl_a", 2, 0, 16, 24, "interface", assets);
+            LoadSprite("panel_br_a", 3, 0, 16, 24, "interface", assets);
+            LoadSprite("panel_h_a", 4, 0, 16, 24, "interface", assets);
+            LoadSprite("panel_v_a", 5, 0, 16, 24, "interface", assets);
+
+            LoadSprite("panel_tl_b", 0, 1, 16, 24, "interface", assets);
+            LoadSprite("panel_tr_b", 1, 1, 16, 24, "interface", assets);
+            LoadSprite("panel_bl_b", 2, 1, 16, 24, "interface", assets);
+            LoadSprite("panel_br_b", 3, 1, 16, 24, "interface", assets);
+            LoadSprite("panel_h_b", 4, 1, 16, 24, "interface", assets);
+            LoadSprite("panel_v_b", 5, 1, 16, 24, "interface", assets);
+
+            LoadSprite("panel_tl_c", 0, 2, 16, 24, "interface", assets);
+            LoadSprite("panel_tr_c", 1, 2, 16, 24, "interface", assets);
+            LoadSprite("panel_bl_c", 2, 2, 16, 24, "interface", assets);
+            LoadSprite("panel_br_c", 3, 2, 16, 24, "interface", assets);
+            LoadSprite("panel_h_c", 4, 2, 16, 24, "interface", assets);
+            LoadSprite("panel_v_c", 5, 2, 16, 24, "interface", assets);
+
+            LoadSprite("panel_close", 6, 2, 16, 24, "interface", assets);
         }
 
         public static void LoadTiles(List<ushort> tileIds, AssetStore<string> assets)

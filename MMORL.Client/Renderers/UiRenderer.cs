@@ -1,9 +1,11 @@
 ﻿using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MMORL.Client.Interface;
 using MMORL.Client.Util;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
+using System;
 using static MMORL.Client.Extensions.NumberExtensions;
 
 namespace MMORL.Client.Renderers
@@ -16,6 +18,9 @@ namespace MMORL.Client.Renderers
 
         private readonly SpriteFont _large;
 
+        private readonly Panel _panel;
+        private readonly Button _button;
+
         public UiRenderer(NetPeerStatistics statistics, GameWorld gameWorld, Camera gameCamera) : base()
         {
             Matrix = Camera.Matrix;
@@ -23,11 +28,28 @@ namespace MMORL.Client.Renderers
             _gameWorld = gameWorld;
             _gameCamera = gameCamera;
 
-            _large = Engine.Assets.GetAsset<SpriteFont>("large");
+            _large = Engine.Assets.GetAsset<SpriteFont>("default");
+
+            _panel = new Panel(300, 300, 500, 500, "c");
+            _button = new TextButton(400, 400, "Hello World");
+            _button.ButtonClickedEvent += OnButtonClicked;
+        }
+
+        private void OnButtonClicked(object sender, EventArgs e)
+        {
+            Console.WriteLine("button clicked");
+        }
+
+        public override void Update(float delta)
+        {
+            _panel.Update(delta);
+            _button.Update(delta);
+            base.Update(delta);
         }
 
         protected override void DoRender()
         {
+            
             //Draw.Text(Draw.DefaultFont, "hello world", new Vector2(10, 10), Color.White);
             int y = 3;
             Draw.Text(_large, $"Sent: {_statistics.SentPackets}", new Vector2(5, y += 14), Color.White);
@@ -50,6 +72,8 @@ namespace MMORL.Client.Renderers
                 }
             }
 
+            _panel.Render();
+            _button.Render();
         }
 
     }

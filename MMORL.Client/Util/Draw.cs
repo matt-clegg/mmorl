@@ -29,6 +29,11 @@ namespace MMORL.Client.Util
             SpriteDraws++;
         }
 
+        public static void Sprite(Sprite sprite, Rectangle rectangle, Color color, SpriteEffects spriteEffect = SpriteEffects.None)
+        {
+            SpriteBatch.Draw(sprite.Texture, rectangle, sprite.Bounds, color, 0, Vector2.Zero, spriteEffect, 0);
+        }
+
         public static void HollowRect(float x, float y, float width, float height, Color color)
         {
             _rect.X = (int)x;
@@ -61,6 +66,26 @@ namespace MMORL.Client.Util
         public static void HollowRect(Rectangle rect, Color color)
         {
             HollowRect(rect.X, rect.Y, rect.Width, rect.Height, color);
+        }
+
+        public static void Rect(float x, float y, float width, float height, Color color)
+        {
+            _rect.X = (int)x;
+            _rect.Y = (int)y;
+            _rect.Width = (int)width;
+            _rect.Height = (int)height;
+            SpriteBatch.Draw(Pixel, _rect, Pixel.Bounds, color);
+        }
+
+        public static void Rect(Vector2 position, float width, float height, Color color)
+        {
+            Rect(position.X, position.Y, width, height, color);
+        }
+
+        public static void Rect(Rectangle rect, Color color)
+        {
+            _rect = rect;
+            SpriteBatch.Draw(Pixel, _rect, Pixel.Bounds, color);
         }
 
         public static void Text(SpriteFont font, string text, Vector2 position, Color color)
