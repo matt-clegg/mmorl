@@ -26,18 +26,13 @@ namespace Lidgren.Network
 		}
 
 		public NetAESEncryption(NetPeer peer, byte[] data, int offset, int count)
-			: this(peer, data.AsSpan(offset, count))
-		{
-		}
-
-		public NetAESEncryption(NetPeer peer, ReadOnlySpan<byte> data)
 #if UNITY
 			: base(peer, new RijndaelManaged())
 #else
 			: base(peer, new AesCryptoServiceProvider())
 #endif
 		{
-			SetKey(data);
+			SetKey(data, offset, count);
 		}
 	}
 }

@@ -36,12 +36,12 @@ namespace MMORL.Client
             const int chunkSize = 16;
 
             _client = new GameClient(host, port);
-            _client.Connect();
+            //_client.Connect();
 
             _gameWorld = new GameWorld(chunkSize);
             _messageHandler = new ClientMessageHandler(_client, _gameWorld);
 
-            Scene = new LoadingScene();
+            Scene = new LoginScene(this);
         }
 
         public void Input(Keys key)
@@ -89,6 +89,12 @@ namespace MMORL.Client
             GC.WaitForPendingFinalizers();
 
             Engine.TimeRate = 1f;
+        }
+
+        public void Connect()
+        {
+            _client.Connect();
+            Scene = new LoadingScene();
         }
 
         public void Dispose()

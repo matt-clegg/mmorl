@@ -28,7 +28,7 @@ namespace MMORL.Client.Scenes
 
             _mapRenderer = new MapRenderer(_gameWorld.Map, Camera);
             Add(_mapRenderer);
-            Add(new UiRenderer(client.Statistics, _gameWorld, Camera));
+            //Add(new UiRenderer(client.Statistics, Camera));
         }
 
         public override void Input(Keys key)
@@ -78,7 +78,7 @@ namespace MMORL.Client.Scenes
 
             HashSet<Point2D> safeChunks = new HashSet<Point2D>();
 
-            for (int x = -2; x <= 2; x++)
+            for (int x = -3; x <= 3; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {

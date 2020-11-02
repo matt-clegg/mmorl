@@ -18,14 +18,9 @@ namespace Lidgren.Network
 		}
 
 		public NetTripleDESEncryption(NetPeer peer, byte[] data, int offset, int count)
-			: this(peer, data.AsSpan(offset, count))
-		{
-		}
-
-		public NetTripleDESEncryption(NetPeer peer, ReadOnlySpan<byte> data)
 			: base(peer, new TripleDESCryptoServiceProvider())
 		{
-			SetKey(data);
+			SetKey(data, offset, count);
 		}
 	}
 }

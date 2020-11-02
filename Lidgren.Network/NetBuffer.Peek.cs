@@ -79,27 +79,13 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Reads the specified number of bytes without advancing the read pointer
 		/// </summary>
-		/// <returns>
-		/// 	<paramref name="into"/>, for easier usage with <see langword="stackalloc" />.
-		/// </returns>
-		public Span<byte> PeekBytes(Span<byte> into)
-		{
-			NetException.Assert(m_bitLength - m_readPosition >= (into.Length * 8), c_readOverflowError);
-
-			NetBitWriter.ReadBytes(m_data, m_readPosition, into);
-
-			return into;
-		}
-
-		/// <summary>
-		/// Reads the specified number of bytes without advancing the read pointer
-		/// </summary>
 		public byte[] PeekBytes(int numberOfBytes)
 		{
-			var retVal = new byte[numberOfBytes];
+			NetException.Assert(m_bitLength - m_readPosition >= (numberOfBytes * 8), c_readOverflowError);
 
-			PeekBytes(retVal);
-			return retVal;
+			byte[] retval = new byte[numberOfBytes];
+			NetBitWriter.ReadBytes(m_data, numberOfBytes, m_readPosition, retval, 0);
+			return retval;
 		}
 
 		/// <summary>
@@ -107,7 +93,11 @@ namespace Lidgren.Network
 		/// </summary>
 		public void PeekBytes(byte[] into, int offset, int numberOfBytes)
 		{
-			PeekBytes(into.AsSpan(offset, numberOfBytes));
+			NetException.Assert(m_bitLength - m_readPosition >= (numberOfBytes * 8), c_readOverflowError);
+			NetException.Assert(offset + numberOfBytes <= into.Length);
+
+			NetBitWriter.ReadBytes(m_data, numberOfBytes, m_readPosition, into, offset);
+			return;
 		}
 
 		//
@@ -285,13 +275,8 @@ namespace Lidgren.Network
 				return retval;
 			}
 
-#if HAS_FULL_SPAN
-			var bytes = PeekBytes(stackalloc byte[4]);
-			return BitConverter.ToSingle(bytes);
-#else
 			byte[] bytes = PeekBytes(4);
 			return BitConverter.ToSingle(bytes, 0);
-#endif
 		}
 
 		/// <summary>
@@ -308,13 +293,8 @@ namespace Lidgren.Network
 				return retval;
 			}
 
-#if HAS_FULL_SPAN
-			var bytes = PeekBytes(stackalloc byte[8]);
-			return BitConverter.ToDouble(bytes);
-#else
 			byte[] bytes = PeekBytes(8);
-			return BitConverter.ToSingle(bytes, 0);
-#endif
+			return BitConverter.ToDouble(bytes, 0);
 		}
 
 		/// <summary>
@@ -327,18 +307,6 @@ namespace Lidgren.Network
 			m_readPosition = wasReadPosition;
 			return retval;
 		}
-		
-		/// <summary>
-	    /// Reads the string byte size prefix without advancing the read pointer.
-	    /// Take note that this is the size in bytes, not the character length of the string.
-	    /// </summary>
-	    public int PeekStringSize()
-	    {
-	        int wasReadPosition = m_readPosition;
-	        int byteLen = (int)ReadVariableUInt32();
-	        m_readPosition = wasReadPosition;
-	        return byteLen;
-	    }
 	}
 }
 

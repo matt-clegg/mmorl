@@ -10,7 +10,6 @@ namespace MMORL.Client.Interface
         public override int Width => (int)Draw.DefaultFont.MeasureString(Text).X;
         public override int Height => (int)Draw.DefaultFont.MeasureString(Text).Y;
 
-        private int _panelX;
 
         private readonly Panel _panel;
 
@@ -18,9 +17,10 @@ namespace MMORL.Client.Interface
         {
             Text = text;
 
-            _panelX = X - Game.SpriteWidth;
+            int panelX = X;
+            int panelY = Y;
 
-            _panel = new Panel(_panelX, Y - Game.SpriteHeight + (Game.SpriteHeight / 4), Width + Game.SpriteWidth * 2, Height + Game.SpriteHeight * 2 - (Game.SpriteHeight / 2), "c");
+            _panel = new Panel(panelX, panelY, Width + Game.SpriteWidth * 2, Height + Game.SpriteHeight * 2 - (Game.SpriteHeight / 2), "c");
         }
 
         public override void OnHoverEnter()
@@ -50,14 +50,12 @@ namespace MMORL.Client.Interface
         public override void Render()
         {
             _panel.Render();
-            Draw.Text(Draw.DefaultFont, Text, new Vector2(X, Y), _currentColor);
-            //Draw.HollowRect(_panelX, Y - Game.SpriteHeight, Width + Game.SpriteWidth * 2, Height + Game.SpriteHeight * 2, Color.Red);
+            Draw.Text(Draw.DefaultFont, Text, new Vector2(X + Game.SpriteWidth, Y + Game.SpriteHeight - (Game.SpriteHeight / 4)), _currentColor);
         }
 
         protected override bool Intersects(int x, int y)
         {
-            return _panel.Intersects(x, y, Game.SpriteWidth / 2, Game.SpriteHeight / 2);
-            //return x >= _panelX && y >= Y - Game.SpriteHeight && x < X + Width + Game.SpriteWidth * 2 && y < Y + Height + Game.SpriteHeight * 2;
+            return _panel.Intersects(x, y, (Game.SpriteWidth / 2) - 2, (Game.SpriteHeight / 2) - 2);
         }
     }
 }

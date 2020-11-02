@@ -14,8 +14,9 @@ namespace MMORL.Client.Scenes
         private readonly Sprite _loadingSprite;
         private readonly Color _color;
 
-        private int _x;
-        private int _y;
+        // Start off screen
+        private int _x = -100;
+        private int _y = -100;
 
         private float _bounce;
         private float _time;

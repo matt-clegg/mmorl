@@ -4,6 +4,7 @@ using MMORL.Shared.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Toolbox;
 
 namespace MMORL.Server.Net
@@ -80,7 +81,7 @@ namespace MMORL.Server.Net
                         try
                         {
                             // TODO: Sleep to simulate connecting
-                            //Thread.Sleep(2000);
+                            Thread.Sleep(1000);
                             message.SenderConnection.Approve();
                         }
                         catch

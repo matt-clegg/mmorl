@@ -30,7 +30,7 @@ namespace MMORL.Client.Renderers
         {
             foreach (Chunk chunk in _map.Chunks)
             {
-                RenderChunk(chunk);
+                RenderChunk(chunk, true);
             }
 
             foreach (Entity entity in _map.Entities)
