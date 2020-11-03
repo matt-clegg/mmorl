@@ -12,6 +12,9 @@ namespace TiledParser
 {
     public class Program
     {
+        private const string Magic = "MMORL";
+        private const int Version = 1;
+
         public static void Main(string[] args)
         {
             string input = "C:/Users/Matt/source/repos/MMORL/Tiled/overworld.json";
@@ -53,9 +56,17 @@ namespace TiledParser
             using (GZipStream gZip = new GZipStream(stream, CompressionLevel.Optimal))
             using (BinaryWriter writer = new BinaryWriter(gZip, Encoding.UTF8))
             {
+                WriteFormat(writer);
                 WriteTileDefinitions(map, writer);
+                WriteWarps(map, writer);
                 WriteChunkData(map, writer);
             }
+        }
+
+        private static void WriteFormat(BinaryWriter writer)
+        {
+            writer.Write(Magic);
+            writer.Write(Version);
         }
 
         private static void WriteTileDefinitions(Map map, BinaryWriter writer)
@@ -94,10 +105,10 @@ namespace TiledParser
                             Tile tile = new Tile
                             {
                                 Id = tileId,
-                                Properties = new List<TileProperty>
+                                Properties = new List<CustomProperty>
                                 {
-                                    new TileProperty { Name = "isSolid", Value = "false" },
-                                    new TileProperty { Name = "isTransparent", Value = "true" }
+                                    new CustomProperty { Name = "isSolid", Value = "false" },
+                                    new CustomProperty { Name = "isTransparent", Value = "true" }
                                 }
                             };
                             tilesToRegister.Add(tile);
@@ -128,6 +139,43 @@ namespace TiledParser
 
                 writer.Write(isSolid);
                 writer.Write(isTransparent);
+            }
+        }
+
+        private static void WriteWarps(Map map, BinaryWriter writer)
+        {
+            Layer warpsLayer = map.GetLayerByName("warps");
+
+            List<Warp> warps = new List<Warp>();
+
+            foreach (LayerObject layerObject in warpsLayer.Objects)
+            {
+
+                if (layerObject.HasProperty("warp"))
+                {
+                    CustomProperty target = layerObject.GetProperty("warp");
+                    LayerObject targetObject = warpsLayer.GetObjectById(int.Parse(target.Value));
+
+                    Warp warp = new Warp
+                    {
+                        Id = layerObject.Id,
+                        StartX = (short)layerObject.X,
+                        StartY = (short)layerObject.Y,
+                        EndX = (short)targetObject.X,
+                        EndY = (short)targetObject.Y,
+                    };
+                    warps.Add(warp);
+                }
+            }
+
+            writer.Write((ushort)warps.Count);
+            foreach (Warp warp in warps)
+            {
+                writer.Write(warp.Id);
+                writer.Write(warp.StartX);
+                writer.Write(warp.StartY);
+                writer.Write(warp.EndX);
+                writer.Write(warp.EndY);
             }
         }
 

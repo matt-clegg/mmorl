@@ -42,7 +42,7 @@
         "overworld.tmx"
     ],
     "project": "",
-    "property.type": "bool",
+    "property.type": "object",
     "recentFiles": [
         "overworld.tmx"
     ],
