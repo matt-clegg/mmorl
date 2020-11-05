@@ -7,8 +7,8 @@ on:
     branches: [ master ]
 
 env:
-  PROJECT_PATH: MMORL
-  OCTOPUS_PROJECT_NAME: MMORL.ServerService/MMORL.ServerService.csproj
+  PROJECT_PATH: MMORL.ServerService/MMORL.ServerService.csproj
+  OCTOPUS_PROJECT_NAME: MMORLServer
   OCTOPUS_SPACE_NAME: Default
   OCTOPUS_ENVIRONMENT_NAME: dev
 
