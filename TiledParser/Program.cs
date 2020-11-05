@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using TiledParser.Models;
 
@@ -10,6 +12,9 @@ namespace TiledParser
 {
     public class Program
     {
+        private const string Magic = "MMORL";
+        private const int Version = 1;
+
         public static void Main(string[] args)
         {
             string input = "C:/Users/Matt/source/repos/MMORL/Tiled/overworld.json";
@@ -32,6 +37,7 @@ namespace TiledParser
 
             watch.Stop();
             Console.WriteLine($"Completed in: {watch.ElapsedMilliseconds}ms");
+            Console.ReadLine();
         }
 
         private static Map ParseMap(string path)
@@ -47,11 +53,20 @@ namespace TiledParser
             Console.WriteLine("Exporting map");
 
             using (FileStream stream = new FileStream(output, FileMode.Create))
-            using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8))
+            using (GZipStream gZip = new GZipStream(stream, CompressionLevel.Optimal))
+            using (BinaryWriter writer = new BinaryWriter(gZip, Encoding.UTF8))
             {
+                WriteFormat(writer);
                 WriteTileDefinitions(map, writer);
+                WriteWarps(map, writer);
                 WriteChunkData(map, writer);
             }
+        }
+
+        private static void WriteFormat(BinaryWriter writer)
+        {
+            writer.Write(Magic);
+            writer.Write(Version);
         }
 
         private static void WriteTileDefinitions(Map map, BinaryWriter writer)
@@ -59,10 +74,52 @@ namespace TiledParser
             Tileset terrainTileset = map.GetTilesetByName("terrain");
 
             List<Tile> tiles = terrainTileset.Tiles;
-
-            writer.Write((ushort)tiles.Count);
+            List<Tile> tilesToRegister = new List<Tile>();
 
             foreach (Tile tile in tiles)
+            {
+                tilesToRegister.Add(tile);
+            }
+
+            Layer terrainLayer = map.GetLayerByName("tiles");
+            ushort terrainFirstId = terrainTileset.FirstGid;
+
+            foreach (Chunk chunk in terrainLayer.Chunks)
+            {
+                int chunkSize = chunk.Width;
+
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    for (int y = 0; y < chunkSize; y++)
+                    {
+                        int index = x + y * chunkSize;
+
+                        ushort tileId = (ushort)chunk.Data[index];
+                        if (tileId != 0)
+                        {
+                            tileId -= terrainFirstId;
+                        }
+
+                        if (!tilesToRegister.Any(t => t.Id == tileId))
+                        {
+                            Tile tile = new Tile
+                            {
+                                Id = tileId,
+                                Properties = new List<CustomProperty>
+                                {
+                                    new CustomProperty { Name = "isSolid", Value = "false" },
+                                    new CustomProperty { Name = "isTransparent", Value = "true" }
+                                }
+                            };
+                            tilesToRegister.Add(tile);
+                        }
+                    }
+                }
+            }
+
+            writer.Write((ushort)tilesToRegister.Count);
+
+            foreach (Tile tile in tilesToRegister)
             {
                 writer.Write(tile.Id);
 
@@ -85,6 +142,42 @@ namespace TiledParser
             }
         }
 
+        private static void WriteWarps(Map map, BinaryWriter writer)
+        {
+            Layer warpsLayer = map.GetLayerByName("warps");
+
+            List<Warp> warps = new List<Warp>();
+
+            foreach (LayerObject layerObject in warpsLayer.Objects)
+            {
+                if (layerObject.HasProperty("warp"))
+                {
+                    CustomProperty target = layerObject.GetProperty("warp");
+                    LayerObject targetObject = warpsLayer.GetObjectById(int.Parse(target.Value));
+
+                    Warp warp = new Warp
+                    {
+                        Id = layerObject.Id,
+                        Name = string.IsNullOrWhiteSpace(layerObject.Name) ? "unknown" : layerObject.Name,
+                        X = (short)layerObject.X,
+                        Y = (short)layerObject.Y,
+                        TargetId = (short)(targetObject?.Id ?? 0),
+                    };
+                    warps.Add(warp);
+                }
+            }
+
+            writer.Write((ushort)warps.Count);
+            foreach (Warp warp in warps)
+            {
+                writer.Write(warp.Id);
+                writer.Write(warp.Name);
+                writer.Write(warp.X);
+                writer.Write(warp.Y);
+                writer.Write(warp.TargetId);
+            }
+        }
+
         private static void WriteChunkData(Map map, BinaryWriter writer)
         {
             Tileset terrainTileset = map.GetTilesetByName("terrain");
@@ -100,7 +193,7 @@ namespace TiledParser
 
             foreach (Chunk chunk in terrainLayer.Chunks)
             {
-                if(chunk.Width != chunk.Height)
+                if (chunk.Width != chunk.Height)
                 {
                     throw new InvalidOperationException($"Chunk size is not square: {chunk.Width}x{chunk.Height}");
                 }

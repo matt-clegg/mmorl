@@ -11,6 +11,8 @@ namespace MMORL.Shared.World
         private readonly Dictionary<Point2D, Chunk> _chunks = new Dictionary<Point2D, Chunk>();
         public IReadOnlyCollection<Chunk> Chunks => _chunks.Values;
 
+        private readonly List<Warp> _warps;
+
         private readonly List<Entity> _entities = new List<Entity>();
         public IReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
 
@@ -21,24 +23,83 @@ namespace MMORL.Shared.World
             ChunkSize = chunkSize;
         }
 
-        public Map(List<Chunk> chunks, int chunkSize)
+        public Map(List<Chunk> chunks, List<Warp> warps, int chunkSize)
         {
             _chunks = chunks.ToDictionary(c => new Point2D(c.X, c.Y));
+            _warps = warps;
             ChunkSize = chunkSize;
         }
 
         public void Add(Entity entity, int x, int y)
         {
+            entity.Initialise(this, x, y);
             _entities.Add(entity);
-            entity.X = x;
-            entity.Y = y;
+        }
+
+        public void Remove(int entityId)
+        {
+            _entities.RemoveAll(e => e.Id == entityId);
+        }
+
+        public void MoveEntity(int id, int x, int y)
+        {
+            foreach (Entity entity in Entities)
+            {
+                if (entity.Id == id)
+                {
+                    entity.Move(x, y);
+                    return;
+                }
+            }
+        }
+
+        public Entity GetEntity(int x, int y)
+        {
+            foreach (Entity entity in _entities)
+            {
+                if (entity.X == x && entity.Y == y)
+                {
+                    return entity;
+                }
+            }
+
+            return null;
         }
 
         public Tile GetTile(int x, int y)
         {
             Point2D chunkPos = ToChunkCoords(x, y);
             Chunk chunk = GetChunk(chunkPos.X, chunkPos.Y);
-            return chunk?.GetTile(Math.Abs(x % ChunkSize), Math.Abs(y % ChunkSize));
+
+            Point2D localChunk = ToLocalChunkCoords(x, y);
+
+            return chunk?.GetTile(localChunk.X, localChunk.Y);
+        }
+
+        public Warp GetWarp(int id)
+        {
+            foreach (Warp warp in _warps)
+            {
+                if (warp.Id == id)
+                {
+                    return warp;
+                }
+            }
+
+            return null;
+        }
+
+        public Warp GetWarp(int x, int y)
+        {
+            foreach (Warp warp in _warps)
+            {
+                if (warp.X == x && warp.Y == y)
+                {
+                    return warp;
+                }
+            }
+
+            return null;
         }
 
         public void LoadChunk(Chunk chunk)
@@ -97,6 +158,24 @@ namespace MMORL.Shared.World
             }
 
             return new Point2D(chunkX, chunkY);
+        }
+
+        public Point2D ToLocalChunkCoords(int x, int y)
+        {
+            int localX = Math.Abs(x % ChunkSize);
+            int localY = Math.Abs(y % ChunkSize);
+
+            if (x < 0 && localX != 0)
+            {
+                localX = ChunkSize - localX;
+            }
+
+            if (y < 0 && localY != 0)
+            {
+                localY = ChunkSize - localY;
+            }
+
+            return new Point2D(localX, localY);
         }
     }
 }

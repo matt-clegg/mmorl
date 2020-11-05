@@ -12,11 +12,11 @@
             "scaleInEditor": 1.5
         },
         "overworld.tmx": {
-            "scale": 1.5,
-            "selectedLayer": 1,
+            "scale": 2,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": -226,
-                "y": -250
+                "x": 773,
+                "y": -923
             }
         },
         "overworld.tmx#swatch": {
@@ -27,6 +27,8 @@
             "scaleInEditor": 1
         }
     },
+    "frame.defaultDuration": 125,
+    "lastUsedTilesetExportFilter": "All Files (*)",
     "map.fixedSize": false,
     "map.height": 10,
     "map.lastUsedExportFilter": "JSON map files (*.json)",
@@ -40,7 +42,7 @@
         "overworld.tmx"
     ],
     "project": "",
-    "property.type": "bool",
+    "property.type": "object",
     "recentFiles": [
         "overworld.tmx"
     ],

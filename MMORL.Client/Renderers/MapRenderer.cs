@@ -1,9 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using MMORL.Client.Entities;
 using MMORL.Client.Extensions;
 using MMORL.Client.Util;
 using MMORL.Shared.Entities;
+using MMORL.Shared.Util;
 using MMORL.Shared.World;
+using Toolbox;
 using Toolbox.Graphics;
+using Camera = MMORL.Client.Util.Camera;
 
 namespace MMORL.Client.Renderers
 {
@@ -11,16 +15,22 @@ namespace MMORL.Client.Renderers
     {
         private readonly Map _map;
 
+        private readonly Sprite _moveIndicatorSprite;
+        private readonly Color _moveIndicatorColor;
+
         public MapRenderer(Map map, Camera camera) : base(camera)
         {
             _map = map;
+
+            _moveIndicatorSprite = Engine.Assets.GetAsset<Sprite>("moveIndicator");
+            _moveIndicatorColor = GameColor.Light.ParseColor() * 0.75f;
         }
 
         protected override void DoRender()
         {
             foreach (Chunk chunk in _map.Chunks)
             {
-                RenderChunk(chunk, true);
+                RenderChunk(chunk);
             }
 
             foreach (Entity entity in _map.Entities)
@@ -30,6 +40,13 @@ namespace MMORL.Client.Renderers
 
                 Draw.Sprite(sprite, new Vector2(entity.X * Game.SpriteWidth, entity.Y * Game.SpriteHeight), color);
 
+                if(entity is LocalPlayer player)
+                {
+                    foreach(Point2D next in player.MovementQueue)
+                    {
+                        Draw.Sprite(_moveIndicatorSprite, new Vector2(next.X * Game.SpriteWidth, next.Y * Game.SpriteHeight), _moveIndicatorColor);
+                    }
+                }
             }
         }
 

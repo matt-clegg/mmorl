@@ -4,6 +4,7 @@ using MMORL.Client.Entities;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using MMORL.Shared.World;
 using System;
 using System.Linq;
@@ -45,6 +46,13 @@ namespace MMORL.Client.Net
                         _gameWorld.Map.LoadChunk(message.Chunk);
                         break;
                     }
+                case MessageType.MoveEntity:
+                    {
+                        MoveEntityMessage message = new MoveEntityMessage();
+                        message.Read(data);
+                        _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
+                        break;
+                    }
                 case MessageType.SpawnEntity:
                     {
                         SpawnEntityMessage message = new SpawnEntityMessage();
@@ -55,10 +63,10 @@ namespace MMORL.Client.Net
                         switch (message.EntityType)
                         {
                             case EntityType.LocalPlayer:
-                                entity = new LocalPlayer(message.EntityId, message.Name, message.Sprite, message.Color);
+                                entity = new LocalPlayer(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed, _client);
                                 break;
                             case EntityType.Player:
-                                entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color);
+                                entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed);
                                 break;
                             default:
                                 Console.WriteLine($"Unhandled entity type: {message.EntityId}");
@@ -71,6 +79,15 @@ namespace MMORL.Client.Net
                         }
                         break;
                     }
+                case MessageType.RemoveEntity:
+                    {
+                        RemoveEntityMessage message = new RemoveEntityMessage();
+                        message.Read(data);
+
+                        _gameWorld.RemoveEntity(message.EntityId);
+
+                        break;
+                    }
                 default:
                     Console.WriteLine($"Unknown message type: {type}");
                     break;
@@ -79,10 +96,13 @@ namespace MMORL.Client.Net
 
         public void OnPlayerConnect(NetIncomingMessage data)
         {
+            
         }
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            string reason = data.ReadString();
+            Console.WriteLine("disconnected: " + reason);
         }
     }
 }

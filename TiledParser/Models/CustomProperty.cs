@@ -1,6 +1,6 @@
 ﻿namespace TiledParser.Models
 {
-    public class TileProperty
+    public class CustomProperty
     {
         public string Name { get; set; }
         public string Type { get; set; }

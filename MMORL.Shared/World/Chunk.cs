@@ -21,6 +21,11 @@ namespace MMORL.Shared.World
             _colors = colors;
         }
 
+        public bool InBounds(int x, int y)
+        {
+            return x >= 0 && y >= 0 && x < Size && y < Size;
+        }
+
         public Tile GetTile(int x, int y)
         {
             return Tile.GetTile(_tiles[x, y]);

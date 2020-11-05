@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF21024D-0671-4127-BFAC-ED8B3BF6D401}"
 	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
 		Dependencies\Toolbox.dll = Dependencies\Toolbox.dll
 	EndProjectSection
 EndProject
@@ -16,9 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMORL.Shared", "MMORL.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMORL.Server", "MMORL.Server\MMORL.Server.csproj", "{CE30E15E-2D1A-4A18-91BB-83A8CE910294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lidgren.Network.MultiTarget", "Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj", "{14088793-63AD-4443-88BE-3DE24137875A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TiledParser", "TiledParser\TiledParser.csproj", "{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TiledParser", "TiledParser\TiledParser.csproj", "{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMORL.OpenGL", "MMORL.OpenGL\MMORL.OpenGL.csproj", "{BCCC176F-AAAE-44D3-8ABC-175BEC41D96A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lidgren.Network.MultiTarget", "Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj", "{F8C307AC-6AB1-4A47-A664-C23CA310A936}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMORL.ServerService", "MMORL.ServerService\MMORL.ServerService.csproj", "{25ECF826-AB2A-417F-825E-C0866EF47AED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,14 +47,22 @@ Global
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE30E15E-2D1A-4A18-91BB-83A8CE910294}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14088793-63AD-4443-88BE-3DE24137875A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F911BF1D-8EE1-483F-9EB3-00E4050BB18E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCCC176F-AAAE-44D3-8ABC-175BEC41D96A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCCC176F-AAAE-44D3-8ABC-175BEC41D96A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCCC176F-AAAE-44D3-8ABC-175BEC41D96A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCCC176F-AAAE-44D3-8ABC-175BEC41D96A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8C307AC-6AB1-4A47-A664-C23CA310A936}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8C307AC-6AB1-4A47-A664-C23CA310A936}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8C307AC-6AB1-4A47-A664-C23CA310A936}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8C307AC-6AB1-4A47-A664-C23CA310A936}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25ECF826-AB2A-417F-825E-C0866EF47AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25ECF826-AB2A-417F-825E-C0866EF47AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25ECF826-AB2A-417F-825E-C0866EF47AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25ECF826-AB2A-417F-825E-C0866EF47AED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ namespace TiledParser.Models
     public class Tile
     {
         public ushort Id { get; set; }
-        public List<TileProperty> Properties { get; set; }
+        public List<CustomProperty> Properties { get; set; }
 
         public bool GetProperty(string key)
         {
@@ -15,7 +15,7 @@ namespace TiledParser.Models
 
         public bool HasProperty(string key)
         {
-            return Properties.Any(p => p.Name.Equals(key));
+            return Properties?.Any(p => p.Name.Equals(key)) ?? false;
         }
     }
 }

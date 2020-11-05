@@ -14,7 +14,8 @@ namespace MMORL.Client.Util
         public static readonly Control SouthEast = new Control().Bind(Keys.NumPad3);
         public static readonly Control SouthWest = new Control().Bind(Keys.NumPad1);
 
-        public static readonly Control UseStairs = new Control().Bind(Keys.Space);
+        public static readonly Control Rest = new Control().Bind(Keys.Space);
+
         public static readonly Control SelectItemDown = new Control().Bind(Keys.Q);
         public static readonly Control SelectItemUp = new Control().Bind(Keys.E);
 

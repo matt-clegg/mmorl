@@ -1,6 +1,11 @@
 ﻿using Lidgren.Network;
+using MMORL.Server.Entities;
 using MMORL.Shared.Net;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Toolbox;
 
 namespace MMORL.Server.Net
 {
@@ -10,9 +15,15 @@ namespace MMORL.Server.Net
 
         private readonly NetServer _server;
 
+        private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
+
+        public Pool Pool { get; private set; }
+
         public GameServer(int port)
         {
             Port = port;
+
+            Pool = new Pool();
 
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
             config.Port = port;
@@ -42,6 +53,8 @@ namespace MMORL.Server.Net
                 switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
+                        MessageType type = (MessageType)message.ReadByte();
+                        messageHandler.OnDataReceived(type, message);
                         break;
                     case NetIncomingMessageType.StatusChanged:
                         NetConnectionStatus status = (NetConnectionStatus)message.ReadByte();
@@ -68,7 +81,7 @@ namespace MMORL.Server.Net
                         try
                         {
                             // TODO: Sleep to simulate connecting
-                            //Thread.Sleep(2000);
+                            Thread.Sleep(1000);
                             message.SenderConnection.Approve();
                         }
                         catch
@@ -90,6 +103,43 @@ namespace MMORL.Server.Net
                 }
                 _server.Recycle(message);
             }
+        }
+
+        public void AddNewPlayerConnection(NetConnection netConnection, ServerEntity player)
+        {
+            _playerConnections.Add(new PlayerNetConnection(netConnection, player));
+        }
+
+        public void RemovePlayerConnection(NetConnection netConnection)
+        {
+            _playerConnections.RemoveAll(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier);
+        }
+
+        public void RemovePlayerConnection(ServerEntity player)
+        {
+            _playerConnections.RemoveAll(con => con.Player.Id == player.Id);
+        }
+
+        public NetConnection GetConnectionForPlayer(ServerEntity player)
+        {
+            return _playerConnections.FirstOrDefault(con => con.Player.Id == player.Id)?.NetConnection;
+        }
+
+        public ServerEntity GetPlayerFromConnection(NetConnection netConnection)
+        {
+            return _playerConnections.FirstOrDefault(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier)?.Player;
+        }
+
+        public void SendMessageToAll(IMessage message, NetDeliveryMethod deliveryMethod)
+        {
+            NetOutgoingMessage outgoing = WriteMessage(message);
+            _server.SendToAll(outgoing, deliveryMethod);
+        }
+
+        public void SendMessageToAllExcept(IMessage message, NetConnection except, NetDeliveryMethod deliveryMethod)
+        {
+            NetOutgoingMessage outgoing = WriteMessage(message);
+            _server.SendToAll(outgoing, except, deliveryMethod, 0);
         }
 
         public void SendMessage(IMessage message, NetConnection connection, NetDeliveryMethod deliveryMethod)

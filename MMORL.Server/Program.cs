@@ -6,10 +6,15 @@ namespace MMORL.Server
     {
         public static void Main(string[] args)
         {
-            const int port = 25565;
-            const int chunkSize = 16;
+            int port = Settings.Port;
+            int chunkSize = Settings.ChunkSize;
 
-            const int updateRateMs = 16;
+            if (chunkSize < 8 || chunkSize > 128)
+            {
+                throw new InvalidOperationException($"Invalid chunk size: {chunkSize}. Value must be between 8 and 128.");
+            }
+
+            const int updateRateMs = 60;
 
             Game game = new Game(port, chunkSize);
 
@@ -22,6 +27,8 @@ namespace MMORL.Server
             {
                 Console.WriteLine($"Server exception: {ex.Message}");
             }
+
+            Console.ReadLine();
         }
     }
 }

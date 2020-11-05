@@ -14,6 +14,7 @@ namespace MMORL.Client.Data
 
             LoadSpritesheet(path, "terrain", assets);
             LoadSpritesheet(path, "monsters", assets);
+            LoadSpritesheet(path, "interface", assets);
         }
 
         private static void LoadSpritesheet(string sheetPath, string name, AssetStore<string> assets)

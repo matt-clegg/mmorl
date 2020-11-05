@@ -8,7 +8,7 @@ namespace MMORL.Client.Entities
 {
     public class Player : Entity
     {
-        public Player(int id, string name, string sprite, GameColor color) : base(id, name, sprite, color)
+        public Player(int id, string name, string sprite, GameColor color, int speed) : base(id, name, sprite, color, speed)
         {
         }
     }

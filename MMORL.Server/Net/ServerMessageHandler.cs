@@ -1,7 +1,9 @@
 ﻿using Lidgren.Network;
-using MMORL.Shared;
+using MMORL.Server.Entities;
+using MMORL.Server.World;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
 using System;
@@ -14,9 +16,9 @@ namespace MMORL.Server.Net
     public class ServerMessageHandler : IMessageHandler
     {
         private readonly GameServer _server;
-        private readonly GameWorld _gameWorld;
+        private readonly ServerWorld _gameWorld;
 
-        public ServerMessageHandler(GameServer server, GameWorld gameWorld)
+        public ServerMessageHandler(GameServer server, ServerWorld gameWorld)
         {
             _server = server;
             _gameWorld = gameWorld;
@@ -26,6 +28,22 @@ namespace MMORL.Server.Net
         {
             switch (type)
             {
+                case MessageType.QueueMovement:
+                    {
+                        QueueMovementMessage message = new QueueMovementMessage();
+                        message.Read(data);
+
+                        _gameWorld.QueueMovement(message.EntityId, message.X, message.Y);
+                        break;
+                    }
+                case MessageType.ClearMoves:
+                    {
+                        ClearMovesMessage message = new ClearMovesMessage();
+                        message.Read(data);
+
+                        _gameWorld.ClearMoves(message.EntityId);
+                        break;
+                    }
                 default:
                     Console.WriteLine($"Unknown message type: {type}");
                     break;
@@ -34,19 +52,31 @@ namespace MMORL.Server.Net
 
         public void OnPlayerConnect(NetIncomingMessage data)
         {
-
             /**
              * TODO
+             * Load player information from db
+             * If player is new, create db info
              * 
              */
 
             Map map = _gameWorld.Map;
 
-            Entity player = new Entity(map.Entities.Count, "player", "player", GameColor.Light);
+            foreach (Entity other in map.Entities)
+            {
+                SpawnEntityMessage spawnExistingPlayer = new SpawnEntityMessage(other, other.X, other.Y, EntityType.Player);
+                _server.SendMessage(spawnExistingPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+            }
+
+            int id = map.Entities.Count;
+            ServerEntity player = new ServerEntity(id, $"player_{id}", "player", GameColor.Light, Energy.NormalSpeed, _server);
             _gameWorld.AddEntity(player, 0, 2);
+            _server.AddNewPlayerConnection(data.SenderConnection, player);
 
             SpawnEntityMessage spawnLocalPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.LocalPlayer);
             _server.SendMessage(spawnLocalPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+
+            SpawnEntityMessage spawnOtherPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.Player);
+            _server.SendMessageToAllExcept(spawnOtherPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
 
             List<Tile> tiles = Tile.RegisteredTiles.ToList();
 
@@ -55,9 +85,9 @@ namespace MMORL.Server.Net
 
             Point2D chunkPos = map.ToChunkCoords(player.X, player.Y);
 
-            for (int y = -1; y <= 1; y++)
+            for (int x = -3; x <= 3; x++)
             {
-                for (int x = -1; x <= 1; x++)
+                for (int y = -1; y <= 1; y++)
                 {
                     Chunk chunk = map.GetChunk(chunkPos.X + x, chunkPos.Y + y);
                     if (chunk != null)
@@ -70,12 +100,25 @@ namespace MMORL.Server.Net
 
         public void OnPlayerDisconnect(NetIncomingMessage data)
         {
+            DisconnectPlayer(data);
         }
 
         private void SendChunk(Chunk chunk, NetIncomingMessage data)
         {
             ChunkDataMessage chunkDataMessage = new ChunkDataMessage(chunk);
             _server.SendMessage(chunkDataMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+        }
+
+        private void DisconnectPlayer(NetIncomingMessage data)
+        {
+            ServerEntity toRemove = _server.GetPlayerFromConnection(data.SenderConnection);
+
+            if (toRemove != null)
+            {
+                RemoveEntityMessage removeEntityMessage = new RemoveEntityMessage(toRemove.Id);
+                _server.SendMessageToAllExcept(removeEntityMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+            }
+            _server.RemovePlayerConnection(data.SenderConnection);
         }
     }
 }

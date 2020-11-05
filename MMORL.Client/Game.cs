@@ -30,16 +30,19 @@ namespace MMORL.Client
         public Game()
         {
             const string host = "127.0.0.1";
-            const int port = 25565;
+            //const string host = "161.35.34.160";
+            //const string host = "dev.matt.gd";
+
+            const int port = 25501;
             const int chunkSize = 16;
 
             _client = new GameClient(host, port);
-            _client.Connect();
+            //_client.Connect();
 
             _gameWorld = new GameWorld(chunkSize);
             _messageHandler = new ClientMessageHandler(_client, _gameWorld);
 
-            Scene = new LoadingScene();
+            Scene = new LoginScene(this);
         }
 
         public void Input(Keys key)
@@ -76,7 +79,7 @@ namespace MMORL.Client
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    Scene = new PlayScene(_gameWorld);
+                    Scene = new PlayScene(_gameWorld, _client);
                     break;
             }
         }
@@ -87,6 +90,17 @@ namespace MMORL.Client
             GC.WaitForPendingFinalizers();
 
             Engine.TimeRate = 1f;
+        }
+
+        public void Connect()
+        {
+            _client.Connect();
+            Scene = new LoadingScene();
+        }
+
+        public void Dispose()
+        {
+            _client.Disconnect();
         }
 
     }

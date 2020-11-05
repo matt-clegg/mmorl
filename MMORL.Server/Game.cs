@@ -1,11 +1,8 @@
 ﻿using MMORL.Server.Net;
 using MMORL.Server.World;
-using MMORL.Shared;
 using MMORL.Shared.Loaders;
 using MMORL.Shared.World;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MMORL.Server
 {
@@ -23,9 +20,14 @@ namespace MMORL.Server
 
             Map map = MapLoader.LoadFromFile("Data/export.dat", chunkSize);
 
-            const float turnTime = 1f;
+            float turnTime = Settings.TurnTime;
 
-            _gameWorld = new ServerWorld(map, turnTime);
+            if (turnTime < 0)
+            {
+                throw new InvalidOperationException($"Invalid turn time: {turnTime}. Value must be greater than zero.");
+            }
+
+            _gameWorld = new ServerWorld(map, turnTime, _server);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
         }
 
@@ -33,6 +35,11 @@ namespace MMORL.Server
         {
             _server.Update(_messageHandler);
             _gameWorld.Update(delta);
+        }
+
+        public void Shutdown()
+        {
+            _server.Shutdown();
         }
     }
 }

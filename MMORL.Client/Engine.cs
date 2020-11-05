@@ -56,7 +56,7 @@ namespace MMORL.Client
         {
             Instance = this;
             Assets = new AssetStore<string>();
-            ClearColor = Color.FromNonPremultiplied(10, 10, 10, 255);
+            ClearColor = Color.FromNonPremultiplied(20, 20, 20, 255);
 
             Width = width;
             Height = height;
@@ -101,6 +101,13 @@ namespace MMORL.Client
             IsFixedTimeStep = true;
 
             GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+        }
+
+        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            _game.Dispose();
         }
 
         protected override void Initialize()
