@@ -48,9 +48,7 @@ namespace MMORL.Server.World
                 // TODO: Ain't great, fix perhaps?
                 if (entity.Id == entityId && entity is ServerEntity serverEntity)
                 {
-                    MoveAction action = _server.Pool.Create<MoveAction>();
-                    action.X = x;
-                    action.Y = y;
+                    MoveAction action = new MoveAction(x, y);
 
                     serverEntity.QueueAction(action);
                     return;
