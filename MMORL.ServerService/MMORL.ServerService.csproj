@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-MMORL.ServerService-FA8FA975-0C79-47BC-8B2B-632A4A53BC4C</UserSecretsId>
+    <AssemblyName>MMORLServerService</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
