@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 using System.Text;
 
 namespace MMORL.Shared.Loaders
@@ -12,9 +13,12 @@ namespace MMORL.Shared.Loaders
         private const string Magic = "MMORL";
         private const int Version = 1;
 
-        public static Map LoadFromFile(string path, int chunkSize)
+        public static Map LoadFromFile(string location, int chunkSize)
         {
             Map map = null;
+
+            string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string path = Path.Combine(currentPath, location);
 
             using (FileStream stream = new FileStream(path, FileMode.Open))
             using (GZipStream gZip = new GZipStream(stream, CompressionMode.Decompress))

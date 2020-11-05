@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "MMORL.ServerService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -97,7 +97,7 @@ namespace MMORL.Client.Net
         {
             const string reason = "client closed";
             _client.Disconnect(reason);
-            _client.ServerConnection.Disconnect(reason);
+            _client.ServerConnection?.Disconnect(reason);
             _client.Shutdown(reason);
             // Have to give the client thread time to shutdown properly before the
             // game closes.

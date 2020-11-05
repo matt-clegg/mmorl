@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
     <ProjectReference Include="..\MMORL.Shared\MMORL.Shared.csproj" />
   </ItemGroup>
@@ -20,6 +24,9 @@
   <ItemGroup>
     <None Update="Data\export.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="app.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -30,9 +30,10 @@ namespace MMORL.Client
         public Game()
         {
             const string host = "127.0.0.1";
-            //const string host = "167.71.142.107";
+            //const string host = "161.35.34.160";
+            //const string host = "dev.matt.gd";
 
-            const int port = 25565;
+            const int port = 25501;
             const int chunkSize = 16;
 
             _client = new GameClient(host, port);

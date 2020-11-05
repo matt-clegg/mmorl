@@ -2,6 +2,7 @@
 using MMORL.Server.World;
 using MMORL.Shared.Loaders;
 using MMORL.Shared.World;
+using System;
 
 namespace MMORL.Server
 {
@@ -19,7 +20,12 @@ namespace MMORL.Server
 
             Map map = MapLoader.LoadFromFile("Data/export.dat", chunkSize);
 
-            const float turnTime = 0.25f;
+            float turnTime = Settings.TurnTime;
+
+            if (turnTime < 0)
+            {
+                throw new InvalidOperationException($"Invalid turn time: {turnTime}. Value must be greater than zero.");
+            }
 
             _gameWorld = new ServerWorld(map, turnTime, _server);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
