@@ -18,34 +18,29 @@ namespace MMORL.ServerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            int port = Settings.Port;
+            int chunkSize = Settings.ChunkSize;
+
+            const int updateRateMs = 60;
+
+            Game game = null;
+
+            try
             {
-                int port = Settings.Port;
-                int chunkSize = Settings.ChunkSize;
-
-                if (chunkSize < 8 || chunkSize > 128)
-                {
-                    throw new InvalidOperationException($"Invalid chunk size: {chunkSize}. Value must be between 8 and 128.");
-                }
-
-                const int updateRateMs = 60;
-
-                Game game = new Game(port, chunkSize);
-
-                try
-                {
-                    ServerRunner runner = new ServerRunner(game, updateRateMs);
-                    runner.Run();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Server exception: {ex.Message}");
-                }
-
-                game.Shutdown();
-
-                await Task.Delay(1000, stoppingToken);
+                game = new Game(port, chunkSize);
+                ServerRunner runner = new ServerRunner(game, updateRateMs);
+                runner.Run();
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Server exception: {ex.Message}");
+            }
+            finally
+            {
+                game?.Shutdown();
+            }
+
+            await Task.Delay(1000, stoppingToken);
         }
     }
 }

@@ -15,6 +15,11 @@ namespace MMORL.Server
 
         public Game(int port, int chunkSize)
         {
+            if (chunkSize < 8 || chunkSize > 128)
+            {
+                throw new ArgumentOutOfRangeException($"Invalid chunk size: {chunkSize}. Value must be between 8 and 128.");
+            }
+
             _server = new GameServer(port);
             _server.Start();
 
