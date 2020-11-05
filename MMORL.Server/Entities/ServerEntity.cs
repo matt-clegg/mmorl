@@ -38,7 +38,6 @@ namespace MMORL.Server.Entities
                 {
                     BaseAction action = _actions.Dequeue();
                     action.Perform(this, _server);
-                    _server.Pool.Recycle(action);
                 }
 
                 Energy.Spend();

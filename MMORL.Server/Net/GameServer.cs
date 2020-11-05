@@ -17,13 +17,9 @@ namespace MMORL.Server.Net
 
         private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
 
-        public Pool Pool { get; private set; }
-
         public GameServer(int port)
         {
             Port = port;
-
-            Pool = new Pool();
 
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
             config.Port = port;
