@@ -150,7 +150,6 @@ namespace TiledParser
 
             foreach (LayerObject layerObject in warpsLayer.Objects)
             {
-
                 if (layerObject.HasProperty("warp"))
                 {
                     CustomProperty target = layerObject.GetProperty("warp");
@@ -159,10 +158,10 @@ namespace TiledParser
                     Warp warp = new Warp
                     {
                         Id = layerObject.Id,
-                        StartX = (short)layerObject.X,
-                        StartY = (short)layerObject.Y,
-                        EndX = (short)targetObject.X,
-                        EndY = (short)targetObject.Y,
+                        Name = string.IsNullOrWhiteSpace(layerObject.Name) ? "unknown" : layerObject.Name,
+                        X = (short)layerObject.X,
+                        Y = (short)layerObject.Y,
+                        TargetId = (short)(targetObject?.Id ?? 0),
                     };
                     warps.Add(warp);
                 }
@@ -172,10 +171,10 @@ namespace TiledParser
             foreach (Warp warp in warps)
             {
                 writer.Write(warp.Id);
-                writer.Write(warp.StartX);
-                writer.Write(warp.StartY);
-                writer.Write(warp.EndX);
-                writer.Write(warp.EndY);
+                writer.Write(warp.Name);
+                writer.Write(warp.X);
+                writer.Write(warp.Y);
+                writer.Write(warp.TargetId);
             }
         }
 

@@ -10,7 +10,7 @@ namespace MMORL.Shared.Loaders
     public static class MapLoader
     {
         private const string Magic = "MMORL";
-        private const int Version = 0;
+        private const int Version = 1;
 
         public static Map LoadFromFile(string path, int chunkSize)
         {
@@ -32,8 +32,6 @@ namespace MMORL.Shared.Loaders
                     throw new InvalidOperationException("Invalid map version.");
                 }
 
-                // TODO: Load warp data
-
                 List<Tile> tiles = TileLoader.Load(reader);
 
                 foreach (Tile tile in tiles)
@@ -41,9 +39,10 @@ namespace MMORL.Shared.Loaders
                     Tile.Register(tile);
                 }
 
+                List<Warp> warps = WarpLoader.Load(reader);
                 List<Chunk> chunks = ChunkLoader.Load(reader);
 
-                map = new Map(chunks, chunkSize);
+                map = new Map(chunks, warps, chunkSize);
             }
 
             return map;

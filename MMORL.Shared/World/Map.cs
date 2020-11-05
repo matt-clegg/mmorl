@@ -11,6 +11,8 @@ namespace MMORL.Shared.World
         private readonly Dictionary<Point2D, Chunk> _chunks = new Dictionary<Point2D, Chunk>();
         public IReadOnlyCollection<Chunk> Chunks => _chunks.Values;
 
+        private readonly List<Warp> _warps;
+
         private readonly List<Entity> _entities = new List<Entity>();
         public IReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
 
@@ -21,9 +23,10 @@ namespace MMORL.Shared.World
             ChunkSize = chunkSize;
         }
 
-        public Map(List<Chunk> chunks, int chunkSize)
+        public Map(List<Chunk> chunks, List<Warp> warps, int chunkSize)
         {
             _chunks = chunks.ToDictionary(c => new Point2D(c.X, c.Y));
+            _warps = warps;
             ChunkSize = chunkSize;
         }
 
@@ -71,6 +74,32 @@ namespace MMORL.Shared.World
             Point2D localChunk = ToLocalChunkCoords(x, y);
 
             return chunk?.GetTile(localChunk.X, localChunk.Y);
+        }
+
+        public Warp GetWarp(int id)
+        {
+            foreach (Warp warp in _warps)
+            {
+                if (warp.Id == id)
+                {
+                    return warp;
+                }
+            }
+
+            return null;
+        }
+
+        public Warp GetWarp(int x, int y)
+        {
+            foreach (Warp warp in _warps)
+            {
+                if (warp.X == x && warp.Y == y)
+                {
+                    return warp;
+                }
+            }
+
+            return null;
         }
 
         public void LoadChunk(Chunk chunk)

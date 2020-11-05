@@ -1421,7 +1421,13 @@
                 {
                  "height":24,
                  "id":2,
-                 "name":"",
+                 "name":"Test Warp Location",
+                 "properties":[
+                        {
+                         "name":"warp",
+                         "type":"object",
+                         "value":0
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

@@ -3552,6 +3552,10 @@
     <property name="warp" type="object" value="2"/>
    </properties>
   </object>
-  <object id="2" x="880" y="-1032" width="16" height="24"/>
+  <object id="2" name="Test Warp Location" x="880" y="-1032" width="16" height="24">
+   <properties>
+    <property name="warp" type="object" value="0"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
