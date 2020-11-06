@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MMORL.Server;
-using System;
+using Sentry;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,18 +25,11 @@ namespace MMORL.ServerService
 
             Game game = null;
 
-            try
+            using (SentrySdk.Init(Settings.SentryDsn))
             {
                 game = new Game(port, chunkSize);
                 ServerRunner runner = new ServerRunner(game, updateRateMs);
-                runner.Run();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Server exception: {ex.Message}");
-            }
-            finally
-            {
+                await Task.Run(() => runner.Run(), stoppingToken);
                 game?.Shutdown();
             }
 
