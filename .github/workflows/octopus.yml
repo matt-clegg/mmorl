@@ -31,6 +31,16 @@ jobs:
       - name: Build
         run: dotnet publish $PROJECT_PATH -c Release -r linux-x64 --self-contained false --output ./packagesoutput/$OCTOPUS_PROJECT_NAME
         
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          version: $PACKAGE_VERSION
+      
       - name: Install Octopus CLI
         run: |
           sudo apt update && sudo apt install --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
