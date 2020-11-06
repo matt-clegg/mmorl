@@ -39,7 +39,6 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          version: ${{ PACKAGE_VERSION }}
       
       - name: Install Octopus CLI
         run: |
