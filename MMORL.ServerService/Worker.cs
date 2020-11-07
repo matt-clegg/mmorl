@@ -18,22 +18,15 @@ namespace MMORL.ServerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            int port = Settings.Port;
-            int chunkSize = Settings.ChunkSize;
-
             const int updateRateMs = 60;
-
-            Game game = null;
 
             using (SentrySdk.Init(Settings.SentryDsn))
             {
-                game = new Game(port, chunkSize);
+                Game game = new Game();
                 ServerRunner runner = new ServerRunner(game, updateRateMs);
                 await Task.Run(() => runner.Run(), stoppingToken);
-                game?.Shutdown();
+                game.Shutdown();
             }
-
-            await Task.Delay(1000, stoppingToken);
         }
     }
 }
