@@ -65,6 +65,7 @@ namespace MMORL.Client.Scenes
         {
             if (entity is LocalPlayer player)
             {
+                System.Console.WriteLine("Adding local player");
                 _player = player;
                 _player.MoveEvent += OnPlayerChunkChange;
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
