@@ -119,6 +119,7 @@ namespace MMORL.Server.Net
                 _server.SendMessageToAllExcept(removeEntityMessage, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
             }
             _server.RemovePlayerConnection(data.SenderConnection);
+            _gameWorld.RemoveEntity(toRemove.Id);
         }
     }
 }
