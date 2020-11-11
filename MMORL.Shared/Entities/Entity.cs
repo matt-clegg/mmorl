@@ -33,6 +33,11 @@ namespace MMORL.Shared.Entities
             Map = map;
         }
 
+        public virtual void Update(float delta)
+        {
+
+        }
+
         public virtual void ProcessTurn()
         {
 

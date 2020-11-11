@@ -29,6 +29,8 @@ namespace MMORL.Client
 
         private readonly PlayScene _playScene;
 
+        public bool WaitForData { get; set; } = false;
+
         public Game()
         {
             const string host = "127.0.0.1";
@@ -69,6 +71,13 @@ namespace MMORL.Client
             {
                 OnClientStatusChange(_client.ClientStatus);
             }
+
+            if(WaitForData && _messageHandler.SpawnedPlayer && _messageHandler.RegisterdTiles)
+            {
+                Scene = _playScene;
+                WaitForData = false;
+            }
+
             _lastStatus = _client.ClientStatus;
         }
 
@@ -82,7 +91,12 @@ namespace MMORL.Client
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    Scene = _playScene;
+                    if(Scene is LoadingScene loadingScene)
+                    {
+                        loadingScene.Text = "Loading...";
+                    }
+
+                    WaitForData = true;
                     break;
             }
         }
@@ -98,7 +112,7 @@ namespace MMORL.Client
         public void Connect()
         {
             _client.Connect();
-            Scene = new LoadingScene();
+            Scene = new LoadingScene("Connecting...");
         }
 
         public void Dispose()

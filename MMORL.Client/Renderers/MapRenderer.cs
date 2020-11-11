@@ -2,9 +2,9 @@
 using MMORL.Client.Entities;
 using MMORL.Client.Extensions;
 using MMORL.Client.Util;
-using MMORL.Shared.Entities;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
+using System.Linq;
 using Toolbox;
 using Toolbox.Graphics;
 using Camera = MMORL.Client.Util.Camera;
@@ -33,14 +33,15 @@ namespace MMORL.Client.Renderers
                 RenderChunk(chunk);
             }
 
-            foreach (Entity entity in _map.Entities)
+            foreach (Creature creature in _map.Entities.Cast<Creature>())
             {
-                Sprite sprite = Engine.Assets.GetAsset<Sprite>(entity.Sprite);
-                Color color = entity.Color.ParseColor();
+                Sprite sprite = Engine.Assets.GetAsset<Sprite>(creature.Sprite);
+                Color color = creature.Color.ParseColor();
 
-                Draw.Sprite(sprite, new Vector2(entity.X * Game.SpriteWidth, entity.Y * Game.SpriteHeight), color);
+                Draw.Sprite(sprite, new Vector2(creature.RenderX, creature.RenderY - creature.RenderZ), color);
+                //Draw.HollowRect(creature.X * Game.SpriteWidth, creature.Y * Game.SpriteHeight, Game.SpriteWidth, Game.SpriteHeight, Color.Blue);
 
-                if(entity is LocalPlayer player)
+                if (creature is LocalPlayer player)
                 {
                     foreach(Point2D next in player.MovementQueue)
                     {

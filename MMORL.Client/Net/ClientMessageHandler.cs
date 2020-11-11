@@ -16,6 +16,10 @@ namespace MMORL.Client.Net
         private readonly GameClient _client;
         private readonly GameWorld _gameWorld;
 
+        // Checks to see if we have the minimum data needed to play. Needs polishing.
+        public bool SpawnedPlayer { get; private set; }
+        public bool RegisterdTiles { get; private set; }
+
         public ClientMessageHandler(GameClient client, GameWorld gameWorld)
         {
             _client = client;
@@ -36,6 +40,7 @@ namespace MMORL.Client.Net
                             Tile.Register(tile);
                         }
 
+                        RegisterdTiles = true;
                         SpriteLoader.LoadTiles(Tile.RegisteredTiles.Select(t => t.Id).ToList(), Engine.Assets);
                         break;
                     }
@@ -64,6 +69,7 @@ namespace MMORL.Client.Net
                         {
                             case EntityType.LocalPlayer:
                                 entity = new LocalPlayer(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed, _client);
+                                SpawnedPlayer = true;
                                 break;
                             case EntityType.Player:
                                 entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed);

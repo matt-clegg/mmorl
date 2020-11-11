@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Net;
 using MMORL.Client.Util;
-using MMORL.Shared.Entities;
 using MMORL.Shared.Net.Messages;
 using MMORL.Shared.Util;
 using System;
@@ -11,7 +10,7 @@ using Toolbox;
 
 namespace MMORL.Client.Entities
 {
-    public class LocalPlayer : Entity
+    public class LocalPlayer : Creature
     {
         private readonly List<Point2D> _movementQueue = new List<Point2D>();
         public IReadOnlyCollection<Point2D> MovementQueue => _movementQueue.AsReadOnly();
@@ -44,7 +43,7 @@ namespace MMORL.Client.Entities
             else if (Controls.Rest.IsPressed(key)) ClearQueuedMoves();
         }
 
-        public void Update(float delta)
+        public override void Update(float delta)
         {
             while (_movementToSend.Count > 0)
             {
@@ -52,6 +51,8 @@ namespace MMORL.Client.Entities
                 QueueMovementMessage message = new QueueMovementMessage(Id, next.X, next.Y);
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
+
+            base.Update(delta);
         }
 
         public override void Move(int x, int y)

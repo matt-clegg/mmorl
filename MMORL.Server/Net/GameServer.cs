@@ -76,6 +76,9 @@ namespace MMORL.Server.Net
                         try
                         {
                             // TODO: Sleep to simulate connecting
+                            // NOTE: THIS BLOCKS THE ENTIRE SERVER.
+                            // When authenticating a player, ensure we don't stop everything while
+                            // processing...
                             Thread.Sleep(1000);
                             message.SenderConnection.Approve();
                         }
