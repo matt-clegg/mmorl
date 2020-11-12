@@ -23,6 +23,11 @@ namespace MMORL.Server.Net
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
             config.Port = port;
 
+#if DEBUG
+            config.SimulatedMinimumLatency = 0.015f; // min 15ms ping (TO THE CLIENTS, NOT ROUND TRIP)
+            config.SimulatedRandomLatency = 0.005f; // 5ms randomness
+#endif
+
             config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
 
             _server = new NetServer(config);
