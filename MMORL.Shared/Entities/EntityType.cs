@@ -3,6 +3,7 @@
     public enum EntityType
     {
         LocalPlayer,
-        Player
+        Player,
+        Mob
     }
 }

@@ -1440,9 +1440,37 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"mob_spawns",
+         "objects":[
+                {
+                 "height":120,
+                 "id":3,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"mob",
+                         "type":"string",
+                         "value":"crab"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":160,
+                 "x":-608,
+                 "y":-120
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":5,
- "nextobjectid":3,
+ "nextlayerid":6,
+ "nextobjectid":4,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",

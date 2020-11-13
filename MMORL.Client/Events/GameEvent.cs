@@ -3,14 +3,8 @@
     public abstract class GameEvent
     {
         public int? Id { get; set; }
-        public bool IsBlocking { get; }
 
         private bool _isFirstUpdate = true;
-
-        public GameEvent(bool isBlocking = false)
-        {
-            IsBlocking = isBlocking;
-        }
 
         public bool Update(float delta)
         {

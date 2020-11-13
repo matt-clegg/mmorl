@@ -74,6 +74,9 @@ namespace MMORL.Client.Net
                             case EntityType.Player:
                                 entity = new Player(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed);
                                 break;
+                            case EntityType.Mob:
+                                entity = new Creature(message.EntityId, message.Name, message.Sprite, message.Color, message.Speed);
+                                break;
                             default:
                                 Console.WriteLine($"Unhandled entity type: {message.EntityId}");
                                 break;

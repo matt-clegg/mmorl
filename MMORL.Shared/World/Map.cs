@@ -12,9 +12,11 @@ namespace MMORL.Shared.World
         public IReadOnlyCollection<Chunk> Chunks => _chunks.Values;
 
         private readonly List<Warp> _warps;
+        private readonly List<MobSpawnDefinition> _spawns;
+        public IReadOnlyCollection<MobSpawnDefinition> Spawns => _spawns;
 
         private readonly List<Entity> _entities = new List<Entity>();
-        public IReadOnlyCollection<Entity> Entities => _entities.AsReadOnly();
+        public IReadOnlyCollection<Entity> Entities => _entities;
 
         public int ChunkSize { get; }
 
@@ -23,10 +25,11 @@ namespace MMORL.Shared.World
             ChunkSize = chunkSize;
         }
 
-        public Map(List<Chunk> chunks, List<Warp> warps, int chunkSize)
+        public Map(List<Chunk> chunks, List<Warp> warps, List<MobSpawnDefinition> spawns, int chunkSize)
         {
             _chunks = chunks.ToDictionary(c => new Point2D(c.X, c.Y));
             _warps = warps;
+            _spawns = spawns;
             ChunkSize = chunkSize;
         }
 

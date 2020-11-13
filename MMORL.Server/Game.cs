@@ -1,6 +1,6 @@
 ﻿using MMORL.Server.Net;
 using MMORL.Server.World;
-using MMORL.Shared.Loaders;
+using MMORL.Server.Loaders;
 using MMORL.Shared.World;
 using System;
 

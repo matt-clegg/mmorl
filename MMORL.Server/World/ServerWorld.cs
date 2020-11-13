@@ -1,9 +1,12 @@
-﻿using MMORL.Server.Actions;
+﻿using Lidgren.Network;
+using MMORL.Server.Actions;
 using MMORL.Server.Entities;
 using MMORL.Server.Net;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
+using MMORL.Shared.Net;
 using MMORL.Shared.World;
+using System.Collections.Generic;
 
 namespace MMORL.Server.World
 {
@@ -14,10 +17,19 @@ namespace MMORL.Server.World
 
         private readonly GameServer _server;
 
+        private readonly List<MobSpawnInstance> _spawners = new List<MobSpawnInstance>();
+
+        private readonly List<Player> _players = new List<Player>();
+
         public ServerWorld(Map map, float turnTime, GameServer server) : base(map)
         {
             _turnTime = turnTime;
             _server = server;
+
+            foreach (MobSpawnDefinition spawnDefinition in map.Spawns)
+            {
+                _spawners.Add(MobSpawnInstance.FromDefinition(spawnDefinition, this, server));
+            }
         }
 
         public override void Update(float delta)
@@ -30,7 +42,34 @@ namespace MMORL.Server.World
                 DoTurn();
             }
 
+            foreach (MobSpawnInstance spawn in _spawners)
+            {
+                spawn.Update(delta);
+            }
+
             base.Update(delta);
+        }
+
+        public void SpawnMob(Entity entity, int x, int y)
+        {
+            AddEntity(entity, x, y);
+            SpawnEntityMessage message = new SpawnEntityMessage(entity, x, y, EntityType.Mob);
+            _server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);
+        }
+
+        public override void AddEntity(Entity entity, int x, int y)
+        {
+            if (entity is Player player)
+            {
+                _players.Add(player);
+            }
+            base.AddEntity(entity, x, y);
+        }
+
+        public override void RemoveEntity(int entityId)
+        {
+            _players.RemoveAll(p => p.Id == entityId);
+            base.RemoveEntity(entityId);
         }
 
         private void DoTurn()
@@ -41,29 +80,26 @@ namespace MMORL.Server.World
             }
         }
 
-        public void QueueMovement(int entityId, int x, int y)
+        public void QueueMovement(int playerId, int x, int y)
         {
-            foreach (Entity entity in Map.Entities)
+            foreach (Player player in _players)
             {
-                // TODO: Ain't great, fix perhaps?
-                if (entity.Id == entityId && entity is ServerEntity serverEntity)
+                if (player.Id == playerId)
                 {
                     MoveAction action = new MoveAction(x, y);
-
-                    serverEntity.QueueAction(action);
+                    player.QueueAction(action);
                     return;
                 }
             }
         }
 
-        public void ClearMoves(int entityId)
+        public void ClearMoves(int playerId)
         {
-            foreach (Entity entity in Map.Entities)
+            foreach (Player player in _players)
             {
-                // TODO: Ain't great, fix perhaps?
-                if (entity.Id == entityId && entity is ServerEntity serverEntity)
+                if (player.Id == playerId)
                 {
-                    serverEntity.ClearMoves();
+                    player.ClearMoves();
                     return;
                 }
             }

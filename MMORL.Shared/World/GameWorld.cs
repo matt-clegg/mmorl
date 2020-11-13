@@ -28,13 +28,13 @@ namespace MMORL.Shared
             }
         }
 
-        public void AddEntity(Entity entity, int x, int y)
+        public virtual void AddEntity(Entity entity, int x, int y)
         {
             Map.Add(entity, x, y);
             EntityAddedEvent?.Invoke(this, entity);
         }
 
-        public void RemoveEntity(int entityId)
+        public virtual void RemoveEntity(int entityId)
         {
             Map.Remove(entityId);
         }

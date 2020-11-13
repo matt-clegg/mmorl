@@ -20,7 +20,7 @@ namespace MMORL.Client.Events
 
         private float _time;
 
-        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight) : base(true)
+        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight)
         {
             _creature = creature;
             _moveTime = 1f / moveTime;
@@ -50,12 +50,12 @@ namespace MMORL.Client.Events
 
         protected override bool Process(float delta)
         {
-            if (_time < 1f)
+            if (_time < _moveTime)
             {
                 _time += _moveTime * delta;
-                if (_time > 1)
+                if (_time > _moveTime)
                 {
-                    _time = 1f;
+                    _time = _moveTime;
                 }
 
                 Vector2 m1 = Vector2.Lerp(_start, _mid, _time);
@@ -69,7 +69,7 @@ namespace MMORL.Client.Events
                 _creature.RenderZ = groundPosition.Y - jumpPosition.Y;
             }
 
-            return _time >= 1f;
+            return _time >= _moveTime;
         }
     }
 }

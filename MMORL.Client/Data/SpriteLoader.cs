@@ -9,6 +9,7 @@ namespace MMORL.Client.Data
         public static void Load(AssetStore<string> assets)
         {
             LoadSprite("player", 0, 0, 16, 24, "monsters", assets);
+            LoadSprite("crab", 4, 0, 16, 24, "monsters", assets);
             LoadSprite("moveIndicator", 15, 9, 16, 24, "terrain", assets);
 
             LoadSprite("loading", 2, 10, 16, 24, "terrain", assets);

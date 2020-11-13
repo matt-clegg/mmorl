@@ -5,6 +5,8 @@ namespace MMORL.Shared.Entities
 {
     public class Entity
     {
+        public EntityType Type { get; set; }
+
         public int Id { get; }
         public string Name { get; }
         public int X { get; set; }

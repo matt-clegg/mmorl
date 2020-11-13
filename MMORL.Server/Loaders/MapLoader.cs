@@ -1,4 +1,5 @@
-﻿using MMORL.Shared.World;
+﻿using MMORL.Server.World;
+using MMORL.Shared.World;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,12 +7,12 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 
-namespace MMORL.Shared.Loaders
+namespace MMORL.Server.Loaders
 {
     public static class MapLoader
     {
         private const string Magic = "MMORL";
-        private const int Version = 1;
+        private const int Version = 2;
 
         public static Map LoadFromFile(string location, int chunkSize)
         {
@@ -44,9 +45,10 @@ namespace MMORL.Shared.Loaders
                 }
 
                 List<Warp> warps = WarpLoader.Load(reader);
+                List<MobSpawnDefinition> spawns = SpawnLoader.Load(reader, 16, 24); // TODO: store tile width and height somewhere sane
                 List<Chunk> chunks = ChunkLoader.Load(reader);
 
-                map = new Map(chunks, warps, chunkSize);
+                map = new Map(chunks, warps, spawns, chunkSize);
             }
 
             return map;

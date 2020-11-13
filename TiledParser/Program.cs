@@ -13,7 +13,7 @@ namespace TiledParser
     public class Program
     {
         private const string Magic = "MMORL";
-        private const int Version = 1;
+        private const int Version = 2;
 
         public static void Main(string[] args)
         {
@@ -59,6 +59,7 @@ namespace TiledParser
                 WriteFormat(writer);
                 WriteTileDefinitions(map, writer);
                 WriteWarps(map, writer);
+                WriteMobSpawns(map, writer);
                 WriteChunkData(map, writer);
             }
         }
@@ -140,6 +141,8 @@ namespace TiledParser
                 writer.Write(isSolid);
                 writer.Write(isTransparent);
             }
+
+            Console.WriteLine($"Saved {tilesToRegister.Count} tiles{(tilesToRegister.Count != 1 ? "s" : "")}");
         }
 
         private static void WriteWarps(Map map, BinaryWriter writer)
@@ -176,6 +179,52 @@ namespace TiledParser
                 writer.Write(warp.Y);
                 writer.Write(warp.TargetId);
             }
+
+            Console.WriteLine($"Saved {warps.Count} warps{(warps.Count != 1 ? "s" : "")}");
+        }
+
+        private static void WriteMobSpawns(Map map, BinaryWriter writer)
+        {
+            Layer spawnsLayer = map.GetLayerByName("mob_spawns");
+
+            List<MobSpawn> spawns = new List<MobSpawn>();
+
+            foreach(LayerObject layerObject in spawnsLayer.Objects)
+            {
+                List<string> mobs = new List<string>();
+                if (layerObject.HasProperty("mob"))
+                {
+                    CustomProperty mobsProperty = layerObject.GetProperty("mob");
+                    string raw = mobsProperty.Value.Trim();
+                    mobs = raw.Split(",").ToList();
+                }
+
+                MobSpawn spawn = new MobSpawn
+                {
+                    X = layerObject.X,
+                    Y = layerObject.Y,
+                    Width = layerObject.Width,
+                    Height = layerObject.Height,
+                    Mobs = mobs,
+                };
+                spawns.Add(spawn);
+            }
+
+            writer.Write((ushort)spawns.Count);
+            foreach(MobSpawn spawn in spawns)
+            {
+                writer.Write(spawn.X);
+                writer.Write(spawn.Y);
+                writer.Write(spawn.Width);
+                writer.Write(spawn.Height);
+                writer.Write((byte)spawn.Mobs.Count);
+                foreach(string mob in spawn.Mobs)
+                {
+                    writer.Write(mob);
+                }
+            }
+
+            Console.WriteLine($"Saved {spawns.Count} mob spawns{(spawns.Count == 1 ? "" : "s")}");
         }
 
         private static void WriteChunkData(Map map, BinaryWriter writer)
@@ -236,6 +285,5 @@ namespace TiledParser
 
             Console.WriteLine($"Saved {terrainLayer.Chunks.Count} chunk{(terrainLayer.Chunks.Count != 1 ? "s" : "")}");
         }
-
     }
 }

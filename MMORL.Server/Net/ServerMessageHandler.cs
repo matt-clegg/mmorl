@@ -63,12 +63,12 @@ namespace MMORL.Server.Net
 
             foreach (Entity other in map.Entities)
             {
-                SpawnEntityMessage spawnExistingPlayer = new SpawnEntityMessage(other, other.X, other.Y, EntityType.Player);
-                _server.SendMessage(spawnExistingPlayer, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
+                SpawnEntityMessage spawnExistingEntity = new SpawnEntityMessage(other, other.X, other.Y, other.Type);
+                _server.SendMessage(spawnExistingEntity, data.SenderConnection, NetDeliveryMethod.ReliableUnordered);
             }
 
             int id = map.Entities.Count;
-            ServerEntity player = new ServerEntity(id, $"player_{id}", "player", GameColor.Light, Energy.NormalSpeed, _server);
+            Player player = new Player(id, $"player_{id}", "player", GameColor.Light, Energy.NormalSpeed, _server);
             _gameWorld.AddEntity(player, 0, 2);
             _server.AddNewPlayerConnection(data.SenderConnection, player);
 
