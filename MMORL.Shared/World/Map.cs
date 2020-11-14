@@ -69,6 +69,19 @@ namespace MMORL.Shared.World
             return null;
         }
 
+        public T GetEntityAs<T>(int id) where T : Entity
+        {
+            foreach(Entity entity in _entities)
+            {
+                if(entity.Id == id)
+                {
+                    return entity as T;
+                }
+            }
+
+            return default;
+        }
+
         public Tile GetTile(int x, int y)
         {
             Point2D chunkPos = ToChunkCoords(x, y);

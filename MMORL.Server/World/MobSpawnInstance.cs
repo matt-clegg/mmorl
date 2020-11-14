@@ -1,4 +1,5 @@
 ﻿using MMORL.Server.Entities;
+using MMORL.Server.Entities.Ai;
 using MMORL.Server.Net;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
@@ -53,13 +54,14 @@ namespace MMORL.Server.World
                 _count++;
 
                 Race race = new Race(toSpawn, toSpawn, GameColor.Blood, Energy.NormalSpeed);
-                Mob entity = new Mob(_world.Map.Entities.Count, race, _server);
+                Mob mob = new Mob(_world.Map.Entities.Count, race, _server);
+                new MobAi(mob);
 
                 // TODO: Check for solid tiles.
                 int x = _definition.X + _random.Next(_definition.Width);
                 int y = _definition.Y + _random.Next(_definition.Height);
 
-                _world.SpawnMob(entity, x, y);
+                _world.SpawnMob(mob, x, y);
             }
         }
 

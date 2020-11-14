@@ -1,14 +1,14 @@
 ﻿using MMORL.Server.Actions;
+using MMORL.Server.Entities.Ai;
 using MMORL.Server.Net;
 using MMORL.Shared.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MMORL.Server.Entities
 {
     public class Mob : ServerEntity
     {
+        public MobAi Ai { get; set; }
+
         public Mob(int id, Race race, GameServer server) : base(id, race, server)
         {
             Type = EntityType.Mob;
@@ -16,8 +16,7 @@ namespace MMORL.Server.Entities
 
         protected override BaseAction OnGetAction()
         {
-            // TODO: Return Ai.DecideNextAction();
-            return null;
+            return Ai.DecideNextAction();
         }
     }
 }

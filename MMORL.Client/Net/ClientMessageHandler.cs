@@ -55,6 +55,7 @@ namespace MMORL.Client.Net
                     {
                         MoveEntityMessage message = new MoveEntityMessage();
                         message.Read(data);
+                        _gameWorld.Map.GetEntityAs<Creature>(message.Id).CurrentPing = data.SenderConnection.AverageRoundtripTime / 2f;
                         _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
                         break;
                     }

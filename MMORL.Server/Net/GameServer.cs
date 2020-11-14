@@ -16,6 +16,8 @@ namespace MMORL.Server.Net
 
         private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
 
+        public static Random Random { get; } = new Random();
+
         public GameServer(int port)
         {
             Port = port;

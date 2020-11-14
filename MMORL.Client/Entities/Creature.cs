@@ -1,6 +1,7 @@
 ﻿using MMORL.Client.Events;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Util;
+using System;
 using System.Collections.Generic;
 
 namespace MMORL.Client.Entities
@@ -13,6 +14,8 @@ namespace MMORL.Client.Entities
 
         private readonly Queue<GameEvent> _queuedEvents = new Queue<GameEvent>();
         private GameEvent _currentEvent;
+
+        public float CurrentPing { get; set; }
 
         public Creature(int id, string name, string sprite, GameColor color, int speed) : base(id, name, sprite, color, speed)
         {
@@ -45,7 +48,10 @@ namespace MMORL.Client.Entities
 
         public override void Move(int x, int y)
         {
-            MoveEvent moveEvent = new MoveEvent(this, X, Y, x, y, 1f, 0.3f);
+            // TODO: Get this value from somewhere
+            float turnsPerSecond = 2;
+
+            MoveEvent moveEvent = new MoveEvent(this, X, Y, x, y, turnsPerSecond, 0.3f, Math.Max(0, CurrentPing));
             _queuedEvents.Enqueue(moveEvent);
             base.Move(x, y);
         }

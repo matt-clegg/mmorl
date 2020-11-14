@@ -20,7 +20,7 @@ namespace MMORL.Client.Events
 
         private float _time;
 
-        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight)
+        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight, float startOffset = 0)
         {
             _creature = creature;
             _moveTime = 1f / moveTime;
@@ -29,7 +29,8 @@ namespace MMORL.Client.Events
             _startY = startY;
             _newX = newX;
             _newY = newY;
-
+            _time = startOffset;
+            
             Id = creature.Id;
         }
 
@@ -52,17 +53,19 @@ namespace MMORL.Client.Events
         {
             if (_time < _moveTime)
             {
-                _time += _moveTime * delta;
+                _time += delta;
                 if (_time > _moveTime)
                 {
                     _time = _moveTime;
                 }
 
-                Vector2 m1 = Vector2.Lerp(_start, _mid, _time);
-                Vector2 m2 = Vector2.Lerp(_mid, _end, _time);
-                Vector2 jumpPosition = Vector2.Lerp(m1, m2, _time);
+                float normalized = _time / _moveTime;
 
-                Vector2 groundPosition = Vector2.Lerp(_start, _end, _time);
+                Vector2 m1 = Vector2.Lerp(_start, _mid, normalized);
+                Vector2 m2 = Vector2.Lerp(_mid, _end, normalized);
+                Vector2 jumpPosition = Vector2.Lerp(m1, m2, normalized);
+
+                Vector2 groundPosition = Vector2.Lerp(_start, _end, normalized);
 
                 _creature.RenderX = jumpPosition.X;
                 _creature.RenderY = groundPosition.Y;

@@ -43,8 +43,6 @@ namespace MMORL.Client.Scenes
             if (_player != null)
             {
                 Camera.Approach(new Vector2(_player.RenderX + (Game.SpriteWidth / 2), _player.RenderY + (Game.SpriteHeight / 2)), 0.1f);
-
-                _player.Update(delta);
             }
 
             _gameWorld.Update(delta);
