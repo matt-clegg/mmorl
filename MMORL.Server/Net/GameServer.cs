@@ -1,9 +1,13 @@
 ﻿using Lidgren.Network;
+using MMORL.Server.Auth;
 using MMORL.Server.Entities;
 using MMORL.Shared.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 
 namespace MMORL.Server.Net
@@ -11,16 +15,22 @@ namespace MMORL.Server.Net
     public class GameServer
     {
         public int Port { get; }
+        private static readonly HttpClient _client = new HttpClient();
 
         private readonly NetServer _server;
+        public bool Running { get; set; }
 
         private readonly List<PlayerNetConnection> _playerConnections = new List<PlayerNetConnection>();
+
+        public IMessageHandler MessageHandler { get; set; }
 
         public static Random Random { get; } = new Random();
 
         public GameServer(int port)
         {
             Port = port;
+
+            _client.BaseAddress = new Uri(Settings.ApiEndpoint);
 
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
             config.Port = port;
@@ -38,75 +48,115 @@ namespace MMORL.Server.Net
         public void Start()
         {
             Console.WriteLine("Starting server...");
+
+            Thread thread = new Thread(Listen);
+            thread.Start();
+            Running = true;
+
             _server.Start();
         }
 
         public void Shutdown()
         {
             Console.WriteLine("Stopping server...");
+            Running = false;
             _server.Shutdown("Server stopped");
         }
 
-        public void Update(IMessageHandler messageHandler)
+        private void Listen()
         {
-            NetIncomingMessage message;
-            while ((message = _server.ReadMessage()) != null)
+            while (Running)
             {
-                switch (message.MessageType)
+                _server.MessageReceivedEvent.WaitOne();
+
+                NetIncomingMessage message;
+                while ((message = _server.ReadMessage()) != null)
                 {
-                    case NetIncomingMessageType.Data:
-                        MessageType type = (MessageType)message.ReadByte();
-                        messageHandler.OnDataReceived(type, message);
-                        break;
-                    case NetIncomingMessageType.StatusChanged:
-                        NetConnectionStatus status = (NetConnectionStatus)message.ReadByte();
+                    switch (message.MessageType)
+                    {
+                        case NetIncomingMessageType.Data:
+                            MessageType type = (MessageType)message.ReadByte();
+                            MessageHandler.OnDataReceived(type, message);
+                            break;
+                        case NetIncomingMessageType.StatusChanged:
+                            NetConnectionStatus status = (NetConnectionStatus)message.ReadByte();
 
-                        Console.WriteLine($"{NetUtility.ToHexString(message.SenderConnection.RemoteUniqueIdentifier)}: {status}");
+                            Console.WriteLine($"{NetUtility.ToHexString(message.SenderConnection.RemoteUniqueIdentifier)}: {status}");
 
-                        if (status == NetConnectionStatus.Connected)
-                        {
-                            if (message.SenderConnection.RemoteHailMessage != null)
+                            if (status == NetConnectionStatus.Connected)
                             {
-                                Console.WriteLine($"Remote hail: {message.SenderConnection.RemoteHailMessage.ReadString()}");
+                                if (message.SenderConnection.RemoteHailMessage != null)
+                                {
+                                    Console.WriteLine($"Remote hail: {message.SenderConnection.RemoteHailMessage.ReadString()}");
+                                }
+
+                                MessageHandler.OnPlayerConnect(message);
+                            }
+                            else if (status == NetConnectionStatus.Disconnected)
+                            {
+                                MessageHandler.OnPlayerDisconnect(message);
                             }
 
-                            messageHandler.OnPlayerConnect(message);
-                        }
-                        else if (status == NetConnectionStatus.Disconnected)
-                        {
-                            messageHandler.OnPlayerDisconnect(message);
-                        }
+                            break;
+                        case NetIncomingMessageType.ConnectionApproval:
+                            Console.WriteLine($"Attempting to approve connection: {message.SenderConnection}");
+                            try
+                            {
+                                // TODO: Sleep to simulate connecting
+                                // NOTE: THIS BLOCKS THE ENTIRE SERVER.
+                                // When authenticating a player, ensure we don't stop everything while
+                                // processing...
 
-                        break;
-                    case NetIncomingMessageType.ConnectionApproval:
-                        Console.WriteLine($"Attempting to approve connection: {message.SenderConnection}");
-                        try
-                        {
-                            // TODO: Sleep to simulate connecting
-                            // NOTE: THIS BLOCKS THE ENTIRE SERVER.
-                            // When authenticating a player, ensure we don't stop everything while
-                            // processing...
-                            Thread.Sleep(1000);
-                            message.SenderConnection.Approve();
-                        }
-                        catch
-                        {
-                            message.SenderConnection.Disconnect("Unable to connect");
-                        }
-                        break;
-                    case NetIncomingMessageType.VerboseDebugMessage:
-                    case NetIncomingMessageType.DebugMessage:
-                    case NetIncomingMessageType.WarningMessage:
-                    case NetIncomingMessageType.ErrorMessage:
-                        Console.WriteLine(message.ReadString());
-                        break;
-                    case NetIncomingMessageType.ConnectionLatencyUpdated:
-                        break;
-                    default:
-                        Console.WriteLine($"Unhandled type: {message.MessageType}");
-                        break;
+                                LoginData login = new LoginData
+                                {
+                                    Email = "test3@man.com",
+                                    Password = "HelloWorld123",
+                                };
+
+                                JsonSerializerOptions options = new JsonSerializerOptions
+                                {
+                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                                };
+
+                                string loginJson = JsonSerializer.Serialize(login, options);
+
+                                var content = new StringContent(loginJson, Encoding.UTF8, "application/json");
+
+                                try
+                                {
+                                    var result = _client.PostAsync("/api/user/login", content).Result;
+                                    string resultContent = result.Content.ReadAsStringAsync().Result;
+                                    Console.WriteLine(resultContent);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Exception when trying to login {ex.Message}");
+                                }
+
+                                Console.WriteLine("checking connection...");
+                                //Thread.Sleep(1000);
+                                Console.WriteLine("approved connection!");
+                                message.SenderConnection.Approve();
+                            }
+                            catch
+                            {
+                                message.SenderConnection.Disconnect("Unable to connect");
+                            }
+                            break;
+                        case NetIncomingMessageType.VerboseDebugMessage:
+                        case NetIncomingMessageType.DebugMessage:
+                        case NetIncomingMessageType.WarningMessage:
+                        case NetIncomingMessageType.ErrorMessage:
+                            Console.WriteLine(message.ReadString());
+                            break;
+                        case NetIncomingMessageType.ConnectionLatencyUpdated:
+                            break;
+                        default:
+                            Console.WriteLine($"Unhandled type: {message.MessageType}");
+                            break;
+                    }
+                    _server.Recycle(message);
                 }
-                _server.Recycle(message);
             }
         }
 

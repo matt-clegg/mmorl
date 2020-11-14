@@ -59,7 +59,5 @@ namespace MMORL.Server
         {
             _game.Update(delta);
         }
-
-
     }
 }

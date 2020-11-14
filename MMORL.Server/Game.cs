@@ -23,9 +23,6 @@ namespace MMORL.Server
                 throw new ArgumentOutOfRangeException($"Invalid chunk size: {chunkSize}. Value must be between 8 and 128.");
             }
 
-            _server = new GameServer(port);
-            _server.Start();
-
             Map map = MapLoader.LoadFromFile("Data/export.dat", chunkSize);
 
             float turnTime = Settings.TurnTime;
@@ -35,13 +32,15 @@ namespace MMORL.Server
                 throw new InvalidOperationException($"Invalid turn time: {turnTime}. Value must be greater than zero.");
             }
 
+            _server = new GameServer(port);
             _gameWorld = new ServerWorld(map, turnTime, _server);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
+            _server.MessageHandler = _messageHandler;
+            _server.Start();
         }
 
         public void Update(float delta)
         {
-            _server.Update(_messageHandler);
             _gameWorld.Update(delta);
         }
 

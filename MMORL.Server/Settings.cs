@@ -8,6 +8,8 @@ namespace MMORL.Server
         public static int ChunkSize => ParseInt("ChunkSize", 16);
         public static float TurnTime => ParseFloat("TurnTime", 0.25f);
 
+        public static string ApiEndpoint => ConfigurationManager.AppSettings["ApiEndpoint"];
+
         public static string SentryDsn => ConfigurationManager.AppSettings["SentryDsn"];
 
         private static int ParseInt(string key, int defaultValue)
