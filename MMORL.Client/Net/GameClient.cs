@@ -1,5 +1,6 @@
 ﻿using Lidgren.Network;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using System;
 using System.Threading;
 
@@ -33,11 +34,14 @@ namespace MMORL.Client.Net
             _client.Start();
         }
 
-        public void Connect()
+        public void Connect(LoginMessage loginMessage)
         {
             try
             {
-                _client.Connect(Host, Port);
+                NetOutgoingMessage outgoing = _client.CreateMessage();
+                outgoing.Write((byte)loginMessage.Type);
+                loginMessage.Write(outgoing);
+                _client.Connect(Host, Port, outgoing);
             }
             catch (Exception ex)
             {

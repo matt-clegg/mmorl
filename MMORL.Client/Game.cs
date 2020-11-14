@@ -1,9 +1,12 @@
 ﻿using Lidgren.Network;
 using Microsoft.Xna.Framework.Input;
+using MMORL.Client.Auth;
 using MMORL.Client.Net;
 using MMORL.Client.Scenes;
 using MMORL.Shared;
+using MMORL.Shared.Net.Messages;
 using System;
+using System.Threading;
 
 namespace MMORL.Client
 {
@@ -109,9 +112,17 @@ namespace MMORL.Client
             Engine.TimeRate = 1f;
         }
 
-        public void Connect()
+        public void Connect(string username, string password)
         {
-            _client.Connect();
+            // Attempt to login on a separate thread to ensure the http request doesn't block the game.
+            Thread thread = new Thread(() =>
+            {
+                string token = new AuthenticationManager().Login(username, password);
+                LoginMessage loginMessage = new LoginMessage(token);
+                _client.Connect(loginMessage);
+            });
+            thread.Start();
+
             Scene = new LoadingScene("Connecting...");
         }
 
@@ -119,6 +130,5 @@ namespace MMORL.Client
         {
             _client.Disconnect();
         }
-
     }
 }

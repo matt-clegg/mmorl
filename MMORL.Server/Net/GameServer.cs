@@ -2,6 +2,7 @@
 using MMORL.Server.Auth;
 using MMORL.Server.Entities;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,41 +103,29 @@ namespace MMORL.Server.Net
                             Console.WriteLine($"Attempting to approve connection: {message.SenderConnection}");
                             try
                             {
-                                // TODO: Sleep to simulate connecting
-                                // NOTE: THIS BLOCKS THE ENTIRE SERVER.
-                                // When authenticating a player, ensure we don't stop everything while
-                                // processing...
-
-                                LoginData login = new LoginData
+                                MessageType messageType = (MessageType)message.ReadByte();
+                                if (messageType == MessageType.Login)
                                 {
-                                    Email = "test3@man.com",
-                                    Password = "HelloWorld123",
-                                };
+                                    // TODO: Authentication code should live somewhere else
+                                    LoginMessage loginMessage = new LoginMessage();
+                                    loginMessage.Read(message);
 
-                                JsonSerializerOptions options = new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                                };
+                                    Console.WriteLine("Received token " + loginMessage.Token);
 
-                                string loginJson = JsonSerializer.Serialize(login, options);
-
-                                var content = new StringContent(loginJson, Encoding.UTF8, "application/json");
-
-                                try
-                                {
-                                    var result = _client.PostAsync("/api/user/login", content).Result;
+                                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/api/user/authenticated");
+                                    request.Headers.Add("token", loginMessage.Token);
+                                    var result = _client.SendAsync(request).Result;
                                     string resultContent = result.Content.ReadAsStringAsync().Result;
-                                    Console.WriteLine(resultContent);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Exception when trying to login {ex.Message}");
-                                }
+                                    Console.WriteLine("result of authenticated " + resultContent);
 
-                                Console.WriteLine("checking connection...");
-                                //Thread.Sleep(1000);
-                                Console.WriteLine("approved connection!");
-                                message.SenderConnection.Approve();
+                                    // Approve sender connection based on above result
+                                    message.SenderConnection.Approve();
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid login message type " + messageType);
+                                    message.SenderConnection.Disconnect("Unable to connect");
+                                }
                             }
                             catch
                             {

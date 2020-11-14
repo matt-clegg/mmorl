@@ -1,5 +1,4 @@
 ﻿using MMORL.Shared.Util;
-using System;
 using System.Threading;
 
 namespace MMORL.Server
@@ -10,7 +9,6 @@ namespace MMORL.Server
         private readonly int _updatesPerSecond;
 
         public bool Running { get; private set; }
-
 
         public ServerRunner(Game game, int updatesPerSecond)
         {
