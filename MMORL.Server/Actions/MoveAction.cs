@@ -25,11 +25,5 @@ namespace MMORL.Server.Actions
             MoveEntityMessage message = new MoveEntityMessage(entity.Id, entity.X, entity.Y);
             server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);
         }
-
-        public override void Recycle()
-        {
-            X = 0;
-            Y = 0;
-        }
     }
 }

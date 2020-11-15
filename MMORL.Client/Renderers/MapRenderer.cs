@@ -38,12 +38,25 @@ namespace MMORL.Client.Renderers
                 Sprite sprite = Engine.Assets.GetAsset<Sprite>(creature.Sprite);
                 Color color = creature.Color.ParseColor();
 
-                Draw.Sprite(sprite, new Vector2(creature.RenderX, creature.RenderY - creature.RenderZ), color);
+                // TODO: Move outline code to Draw method
+                for (int y = -1; y <= 1; y++)
+                {
+                    for (int x = -1; x <= 1; x++)
+                    {
+                        if (x == 0 && y == 0)
+                        {
+                            continue;
+                        }
+                        Draw.Sprite(sprite, new Vector2(creature.RenderX + (Game.SpriteWidth / 2) + x, creature.RenderY - creature.RenderZ + Game.SpriteHeight + y), creature.Rotation, Engine.Instance.ClearColor * 0.5f);
+                    }
+                }
+
+                Draw.Sprite(sprite, new Vector2(creature.RenderX + (Game.SpriteWidth / 2), creature.RenderY - creature.RenderZ + Game.SpriteHeight), creature.Rotation, color);
                 //Draw.HollowRect(creature.X * Game.SpriteWidth, creature.Y * Game.SpriteHeight, Game.SpriteWidth, Game.SpriteHeight, Color.Blue);
 
                 if (creature is LocalPlayer player)
                 {
-                    foreach(Point2D next in player.MovementQueue)
+                    foreach (Point2D next in player.MovementQueue)
                     {
                         Draw.Sprite(_moveIndicatorSprite, new Vector2(next.X * Game.SpriteWidth, next.Y * Game.SpriteHeight), _moveIndicatorColor);
                     }

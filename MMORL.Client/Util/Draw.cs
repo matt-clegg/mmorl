@@ -29,6 +29,13 @@ namespace MMORL.Client.Util
             SpriteDraws++;
         }
 
+        public static void Sprite(Sprite sprite, Vector2 position, float rotation, Color color, SpriteEffects spriteEffect = SpriteEffects.None)
+        {
+            // TODO: Pass in sprite origin
+            SpriteBatch.Draw(sprite.Texture, position, sprite.Bounds, color, rotation, new Vector2(Game.SpriteWidth / 2, Game.SpriteHeight), 1f, spriteEffect, 0);
+            SpriteDraws++;
+        }
+
         public static void Sprite(Sprite sprite, Rectangle rectangle, Color color, SpriteEffects spriteEffect = SpriteEffects.None)
         {
             SpriteBatch.Draw(sprite.Texture, rectangle, sprite.Bounds, color, 0, Vector2.Zero, spriteEffect, 0);

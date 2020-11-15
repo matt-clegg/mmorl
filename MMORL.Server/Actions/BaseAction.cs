@@ -4,7 +4,7 @@ using Toolbox;
 
 namespace MMORL.Server.Actions
 {
-    public abstract class BaseAction : Poolable
+    public abstract class BaseAction
     {
         public abstract void Perform(ServerEntity entity, GameServer server);
     }

@@ -8,6 +8,8 @@ namespace MMORL.Client.Entities
 {
     public class Creature : Entity
     {
+        public float LastRotation { get; set; }
+        public float Rotation { get; set; }
         public float RenderX { get; set; }
         public float RenderY { get; set; }
         public float RenderZ { get; set; }
@@ -51,7 +53,7 @@ namespace MMORL.Client.Entities
             // TODO: Get this value from somewhere
             float turnsPerSecond = 2;
 
-            MoveEvent moveEvent = new MoveEvent(this, X, Y, x, y, turnsPerSecond, 0.3f, Math.Max(0, CurrentPing));
+            MoveEvent moveEvent = new MoveEvent(this, X, Y, x, y, turnsPerSecond, 0.3f, 0.1f, Math.Max(0, CurrentPing));
             _queuedEvents.Enqueue(moveEvent);
             base.Move(x, y);
         }

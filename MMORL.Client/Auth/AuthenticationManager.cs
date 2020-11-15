@@ -31,7 +31,7 @@ namespace MMORL.Client.Auth
 
             try
             {
-                var result = _client.PostAsync("/api/user/login", content).Result;
+                var result = _client.PostAsync("/auth/login", content).Result;
                 token = result.Headers.GetValues("auth").FirstOrDefault();
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace MMORL.Client.Auth
         // TODO: Maybe move the HttpClient elsewhere, as this class will be instantiated in a separate thread.
         static AuthenticationManager()
         {
-            _client.BaseAddress = new Uri("http://localhost:3000");
+            _client.BaseAddress = new Uri("https://api.matt.gd/api/user/login");
         }
     }
 }

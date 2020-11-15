@@ -112,7 +112,7 @@ namespace MMORL.Server.Net
 
                                     Console.WriteLine("Received token " + loginMessage.Token);
 
-                                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/api/user/authenticated");
+                                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/auth/authenticated");
                                     request.Headers.Add("token", loginMessage.Token);
                                     var result = _client.SendAsync(request).Result;
                                     string resultContent = result.Content.ReadAsStringAsync().Result;

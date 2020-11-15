@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MMORL.Client.Entities;
+using System;
 
 namespace MMORL.Client.Events
 {
@@ -8,6 +9,7 @@ namespace MMORL.Client.Events
         private readonly Creature _creature;
         private readonly float _moveTime;
         private readonly float _bounceHeight;
+        private readonly float _rotateAmount;
 
         private readonly int _startX;
         private readonly int _startY;
@@ -19,18 +21,20 @@ namespace MMORL.Client.Events
         private Vector2 _end;
 
         private float _time;
+        private float _targetRotation;
 
-        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight, float startOffset = 0)
+        public MoveEvent(Creature creature, int startX, int startY, int newX, int newY, float moveTime, float bounceHeight, float rotateAmount, float startOffset = 0)
         {
             _creature = creature;
             _moveTime = 1f / moveTime;
             _bounceHeight = bounceHeight;
+            _rotateAmount = rotateAmount;
             _startX = startX;
             _startY = startY;
             _newX = newX;
             _newY = newY;
             _time = startOffset;
-            
+
             Id = creature.Id;
         }
 
@@ -47,6 +51,9 @@ namespace MMORL.Client.Events
             _start = new Vector2(_startX * Game.SpriteWidth, _startY * Game.SpriteHeight);
             _end = new Vector2(_newX * Game.SpriteWidth, _newY * Game.SpriteHeight);
             _mid = _start + (_end - _start) / 2 + new Vector2(0, -(Game.SpriteHeight * _bounceHeight));
+
+            _targetRotation = _creature.LastRotation > 0 ? -_rotateAmount : _rotateAmount;
+            _creature.LastRotation = _targetRotation;
         }
 
         protected override bool Process(float delta)
@@ -60,6 +67,13 @@ namespace MMORL.Client.Events
                 }
 
                 float normalized = _time / _moveTime;
+
+                if (_rotateAmount != 0)
+                {
+                    float rotNormalized = 1 - Math.Abs((normalized * 2) - 1);
+                    float rot = MathHelper.Lerp(0, _targetRotation, rotNormalized);
+                    _creature.Rotation = rot;
+                }
 
                 Vector2 m1 = Vector2.Lerp(_start, _mid, normalized);
                 Vector2 m2 = Vector2.Lerp(_mid, _end, normalized);

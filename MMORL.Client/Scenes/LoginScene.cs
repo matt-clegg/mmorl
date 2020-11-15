@@ -24,7 +24,7 @@ namespace MMORL.Client.Scenes
 
         private void OnLoginEvent(object sender, EventArgs e)
         {
-            string username = "test3@man.com";
+            string username = "test4@man.com";
             string password = "HelloWorld123";
             _game.Connect(username, password);
         }
