@@ -1,9 +1,12 @@
 ﻿using Lidgren.Network;
 using Microsoft.Xna.Framework.Input;
+using MMORL.Client.Auth;
 using MMORL.Client.Net;
 using MMORL.Client.Scenes;
 using MMORL.Shared;
+using MMORL.Shared.Net.Messages;
 using System;
+using System.Threading;
 
 namespace MMORL.Client
 {
@@ -27,21 +30,26 @@ namespace MMORL.Client
 
         private NetConnectionStatus _lastStatus;
 
+        private readonly PlayScene _playScene;
+
+        public bool WaitForData { get; set; } = false;
+
         public Game()
         {
-            //const string host = "127.0.0.1";
-            //const string host = "161.35.34.160";
-            const string host = "dev.matt.gd";
+            const string host = "127.0.0.1";
+            //const string host = "dev.matt.gd";
 
             const int port = 25501;
             const int chunkSize = 16;
 
             _client = new GameClient(host, port);
-            //_client.Connect();
 
             _gameWorld = new GameWorld(chunkSize);
             _messageHandler = new ClientMessageHandler(_client, _gameWorld);
 
+            // Create the play scene instance to ensure the OnEntityAdded event is subscribed to
+            // before an entity is added to the game world.
+            _playScene = new PlayScene(_gameWorld, _client);
             Scene = new LoginScene(this);
         }
 
@@ -66,6 +74,13 @@ namespace MMORL.Client
             {
                 OnClientStatusChange(_client.ClientStatus);
             }
+
+            if(WaitForData && _messageHandler.SpawnedPlayer && _messageHandler.RegisterdTiles)
+            {
+                Scene = _playScene;
+                WaitForData = false;
+            }
+
             _lastStatus = _client.ClientStatus;
         }
 
@@ -79,7 +94,12 @@ namespace MMORL.Client
             switch (status)
             {
                 case NetConnectionStatus.Connected:
-                    Scene = new PlayScene(_gameWorld, _client);
+                    if(Scene is LoadingScene loadingScene)
+                    {
+                        loadingScene.Text = "Loading...";
+                    }
+
+                    WaitForData = true;
                     break;
             }
         }
@@ -92,16 +112,23 @@ namespace MMORL.Client
             Engine.TimeRate = 1f;
         }
 
-        public void Connect()
+        public void Connect(string username, string password)
         {
-            _client.Connect();
-            Scene = new LoadingScene();
+            // Attempt to login on a separate thread to ensure the http request doesn't block the game.
+            Thread thread = new Thread(() =>
+            {
+                string token = new AuthenticationManager().Login(username, password);
+                LoginMessage loginMessage = new LoginMessage(token);
+                _client.Connect(loginMessage);
+            });
+            thread.Start();
+
+            Scene = new LoadingScene("Connecting...");
         }
 
         public void Dispose()
         {
             _client.Disconnect();
         }
-
     }
 }

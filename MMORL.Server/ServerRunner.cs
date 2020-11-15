@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MMORL.Shared.Util;
 using System.Threading;
 
 namespace MMORL.Server
@@ -9,8 +9,6 @@ namespace MMORL.Server
         private readonly int _updatesPerSecond;
 
         public bool Running { get; private set; }
-
-        private static readonly DateTime UnixStart = new DateTime(1970, 1, 1, 0, 0, 0);
 
         public ServerRunner(Game game, int updatesPerSecond)
         {
@@ -25,12 +23,12 @@ namespace MMORL.Server
             double time = 0.0;
             double delta = 1 / (double)_updatesPerSecond;
 
-            double currentTime = TimeInSeconds();
+            double currentTime = Time.TimeInSeconds();
             double accumulator = 0.0;
 
             while (Running)
             {
-                double newTime = TimeInSeconds();
+                double newTime = Time.TimeInSeconds();
                 double frameTime = newTime - currentTime;
                 currentTime = newTime;
 
@@ -58,12 +56,6 @@ namespace MMORL.Server
         private void Update(float delta)
         {
             _game.Update(delta);
-        }
-
-        private double TimeInSeconds()
-        {
-            TimeSpan timeSpan = DateTime.UtcNow - UnixStart;
-            return timeSpan.TotalSeconds;
         }
     }
 }

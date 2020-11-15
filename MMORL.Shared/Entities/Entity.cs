@@ -5,6 +5,8 @@ namespace MMORL.Shared.Entities
 {
     public class Entity
     {
+        public EntityType Type { get; set; }
+
         public int Id { get; }
         public string Name { get; }
         public int X { get; set; }
@@ -31,6 +33,11 @@ namespace MMORL.Shared.Entities
             X = x;
             Y = y;
             Map = map;
+        }
+
+        public virtual void Update(float delta)
+        {
+
         }
 
         public virtual void ProcessTurn()

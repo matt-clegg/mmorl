@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace MMORL.Shared.Loaders
+namespace MMORL.Server.Loaders
 {
     public static class TileLoader
     {

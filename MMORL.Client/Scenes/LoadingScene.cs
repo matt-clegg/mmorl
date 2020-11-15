@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Extensions;
 using MMORL.Client.Renderers;
@@ -11,6 +12,7 @@ namespace MMORL.Client.Scenes
 {
     public class LoadingScene : Scene
     {
+        private readonly SpriteFont _font;
         private readonly Sprite _loadingSprite;
         private readonly Color _color;
 
@@ -21,10 +23,14 @@ namespace MMORL.Client.Scenes
         private float _bounce;
         private float _time;
 
+        public string Text { get; set; }
+
         private readonly DumbRenderer _renderer;
 
-        public LoadingScene()
+        public LoadingScene(string text)
         {
+            Text = text;
+            _font = Engine.Assets.GetAsset<SpriteFont>("default");
             _renderer = new DumbRenderer(Camera);
 
             _loadingSprite = Engine.Assets.GetAsset<Sprite>("loading");
@@ -50,6 +56,8 @@ namespace MMORL.Client.Scenes
         {
             _renderer.Begin();
             Draw.Sprite(_loadingSprite, new Vector2(_x, _y), _color);
+
+            Draw.TextCentered(_font, Text, new Vector2(Camera.Viewport.Width / 2, Camera.Viewport.Height / 2 + 40), Color.White);
             _renderer.End();
         }
     }

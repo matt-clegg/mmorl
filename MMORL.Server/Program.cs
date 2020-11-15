@@ -1,4 +1,6 @@
-﻿using Sentry;
+﻿#if !DEBUG
+using Sentry;
+#endif
 using System;
 
 namespace MMORL.Server
@@ -7,19 +9,13 @@ namespace MMORL.Server
     {
         public static void Main(string[] args)
         {
+#if !DEBUG
             using (SentrySdk.Init(Settings.SentryDsn))
             {
-                int port = Settings.Port;
-                int chunkSize = Settings.ChunkSize;
-
-                if (chunkSize < 8 || chunkSize > 128)
-                {
-                    throw new InvalidOperationException($"Invalid chunk size: {chunkSize}. Value must be between 8 and 128.");
-                }
-
+#endif
                 const int updateRateMs = 60;
 
-                Game game = new Game(port, chunkSize);
+                Game game = new Game();
 
                 try
                 {
@@ -30,7 +26,9 @@ namespace MMORL.Server
                 {
                     Console.WriteLine($"Server exception: {ex.Message}");
                 }
+#if !DEBUG
             }
+#endif
         }
     }
 }

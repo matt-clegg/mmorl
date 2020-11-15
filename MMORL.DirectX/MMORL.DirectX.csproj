@@ -17,6 +17,7 @@
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="Sentry" Version="2.1.6" />
   </ItemGroup>
   <ItemGroup>
 	<MonoGameContentReference Include="..\MMORL.Client\Content\Content.mgcb">

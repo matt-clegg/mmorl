@@ -1,4 +1,7 @@
 ﻿using MMORL.Client;
+#if !DEBUG
+using Sentry;
+#endif
 using System;
 
 namespace MMORL.OpenGL
@@ -16,10 +19,21 @@ namespace MMORL.OpenGL
             const bool fullscreen = false;
             const string title = "MMO RL";
 
-            using (Engine engine = new Engine(width, height, windowWidth, windowHeight, scale, title, fullscreen))
+#if !DEBUG
+            using (SentrySdk.Init("https://39540b889915409bb2e1725c2523247d@o472714.ingest.sentry.io/5507880"))
             {
-                engine.Run();
+                SentrySdk.ConfigureScope(scope =>
+                {
+                    scope.SetTag("graphics.api", "OpenGL");
+                });
+#endif
+                using (Engine engine = new Engine(width, height, windowWidth, windowHeight, scale, title, fullscreen))
+                {
+                    engine.Run();
+                }
+#if !DEBUG
             }
+#endif
         }
     }
 }

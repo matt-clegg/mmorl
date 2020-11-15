@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Interface;
-using MMORL.Client.Net;
 using MMORL.Client.Renderers;
 using System;
 
@@ -25,7 +24,9 @@ namespace MMORL.Client.Scenes
 
         private void OnLoginEvent(object sender, EventArgs e)
         {
-            _game.Connect();
+            string username = "test3@man.com";
+            string password = "HelloWorld123";
+            _game.Connect(username, password);
         }
 
         public override void Input(Keys key)

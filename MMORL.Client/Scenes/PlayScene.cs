@@ -42,10 +42,7 @@ namespace MMORL.Client.Scenes
 
             if (_player != null)
             {
-                Camera.Approach(new Vector2(_player.X * Game.SpriteWidth + (Game.SpriteWidth / 2),
-                                 _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2)), 0.1f);
-
-                _player.Update(delta);
+                Camera.Approach(new Vector2(_player.RenderX + (Game.SpriteWidth / 2), _player.RenderY + (Game.SpriteHeight / 2)), 0.1f);
             }
 
             _gameWorld.Update(delta);
@@ -70,6 +67,12 @@ namespace MMORL.Client.Scenes
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
                 Camera.Y = _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2);
             }
+
+            if (entity is Creature creature)
+            {
+                creature.RenderX = entity.X * Game.SpriteWidth;
+                creature.RenderY = entity.Y * Game.SpriteHeight;
+            }
         }
 
         private void OnPlayerChunkChange(object sender, Point2D position)
@@ -93,7 +96,6 @@ namespace MMORL.Client.Scenes
                     _gameWorld.Map.UnloadChunk(allChunks.X, allChunks.Y);
                 }
             }
-
         }
     }
 }

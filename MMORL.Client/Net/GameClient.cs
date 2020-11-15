@@ -1,5 +1,6 @@
 ﻿using Lidgren.Network;
 using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using System;
 using System.Threading;
 
@@ -22,16 +23,25 @@ namespace MMORL.Client.Net
             Port = port;
 
             NetPeerConfiguration config = new NetPeerConfiguration("mmorl");
+            config.EnableMessageType(NetIncomingMessageType.ConnectionLatencyUpdated);
+
+#if DEBUG
+            config.SimulatedMinimumLatency = 0.015f; // min 15ms ping (TO THE CLIENTS, NOT ROUND TRIP)
+            config.SimulatedRandomLatency = 0.005f; // 5ms randomness
+#endif
 
             _client = new NetClient(config);
             _client.Start();
         }
 
-        public void Connect()
+        public void Connect(LoginMessage loginMessage)
         {
             try
             {
-                _client.Connect(Host, Port);
+                NetOutgoingMessage outgoing = _client.CreateMessage();
+                outgoing.Write((byte)loginMessage.Type);
+                loginMessage.Write(outgoing);
+                _client.Connect(Host, Port, outgoing);
             }
             catch (Exception ex)
             {
@@ -49,6 +59,11 @@ namespace MMORL.Client.Net
 
                 switch (message.MessageType)
                 {
+                    case NetIncomingMessageType.ConnectionLatencyUpdated:
+                        {
+                            Console.WriteLine("Ping " + (message.ReadFloat() * 1000) + "ms");
+                            break;
+                        }
                     case NetIncomingMessageType.Data:
                         MessageType type = (MessageType)message.ReadByte();
                         messageHandler.OnDataReceived(type, message);

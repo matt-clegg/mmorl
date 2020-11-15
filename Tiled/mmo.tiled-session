@@ -16,7 +16,7 @@
             "selectedLayer": 3,
             "viewCenter": {
                 "x": 773,
-                "y": -923
+                "y": -958.5
             }
         },
         "overworld.tmx#swatch": {
@@ -42,7 +42,7 @@
         "overworld.tmx"
     ],
     "project": "",
-    "property.type": "object",
+    "property.type": "string",
     "recentFiles": [
         "overworld.tmx"
     ],
