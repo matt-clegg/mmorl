@@ -19,6 +19,9 @@ namespace MMORL.Client.Scenes
 
         private LocalPlayer _player;
 
+        public int _mouseX;
+        public int _mouseY;
+
         public PlayScene(GameWorld gameWorld, GameClient client)
         {
             _gameWorld = gameWorld;
@@ -38,11 +41,17 @@ namespace MMORL.Client.Scenes
 
         public override void Update(float delta)
         {
+            MouseState mouse = Mouse.GetState();
+
+            _mapRenderer.MouseX = mouse.X;
+            _mapRenderer.MouseY = mouse.Y;
+
             base.Update(delta);
 
             if (_player != null)
             {
                 Camera.Approach(new Vector2(_player.RenderX + (Game.SpriteWidth / 2), _player.RenderY + (Game.SpriteHeight / 2)), 0.1f);
+                //Camera.Approach(new Vector2(_player.RenderX, _player.RenderY), 0.1f);
             }
 
             _gameWorld.Update(delta);
@@ -66,6 +75,8 @@ namespace MMORL.Client.Scenes
                 _player.MoveEvent += OnPlayerChunkChange;
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
                 Camera.Y = _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2);
+                //Camera.X = _player.X * Game.SpriteWidth;
+                //Camera.Y = _player.Y * Game.SpriteHeight;
             }
 
             if (entity is Creature creature)
@@ -99,3 +110,4 @@ namespace MMORL.Client.Scenes
         }
     }
 }
+

@@ -4,6 +4,7 @@ using MMORL.Client.Extensions;
 using MMORL.Client.Util;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
+using System;
 using System.Linq;
 using Toolbox;
 using Toolbox.Graphics;
@@ -15,8 +16,16 @@ namespace MMORL.Client.Renderers
     {
         private readonly Map _map;
 
+        private readonly Sprite _tileIndicatorSprite;
+        private readonly Color _tileIndicatorColor;
+
         private readonly Sprite _moveIndicatorSprite;
         private readonly Color _moveIndicatorColor;
+
+        public int MouseX { get; set; }
+        public int MouseY { get; set; }
+
+        private bool _creatureWasSelected = false;
 
         public MapRenderer(Map map, Camera camera) : base(camera)
         {
@@ -24,17 +33,30 @@ namespace MMORL.Client.Renderers
 
             _moveIndicatorSprite = Engine.Assets.GetAsset<Sprite>("moveIndicator");
             _moveIndicatorColor = GameColor.Light.ParseColor() * 0.75f;
+
+            _tileIndicatorSprite = Engine.Assets.GetAsset<Sprite>("tileIndicator");
+            _tileIndicatorColor = GameColor.Light.ParseColor() * 0.75f;
         }
 
         protected override void DoRender()
         {
+            Vector2 worldPos = Camera.ScreenToCamera(new Vector2((MouseX - Engine.ViewPaddingX) / Engine.ViewScale, (MouseY - Engine.ViewPaddingY) / Engine.ViewScale));
+
+            int mouseTileX = (int)Math.Floor(worldPos.X / Game.SpriteWidth);
+            int mouseTileY = (int)Math.Floor(worldPos.Y / Game.SpriteHeight);
+
             foreach (Chunk chunk in _map.Chunks)
             {
                 RenderChunk(chunk);
             }
 
+            bool creatureSelected = false;
+
             foreach (Creature creature in _map.Entities.Cast<Creature>())
             {
+                bool selected = worldPos.X >= creature.RenderX && worldPos.Y >= creature.RenderY && worldPos.X < creature.RenderX + Game.SpriteWidth && worldPos.Y < creature.RenderY + Game.SpriteHeight;
+                creatureSelected |= selected;
+
                 Sprite sprite = Engine.Assets.GetAsset<Sprite>(creature.Sprite);
                 Color color = creature.Color.ParseColor();
 
@@ -47,7 +69,7 @@ namespace MMORL.Client.Renderers
                         {
                             continue;
                         }
-                        Draw.Sprite(sprite, new Vector2(creature.RenderX + (Game.SpriteWidth / 2) + x, creature.RenderY - creature.RenderZ + Game.SpriteHeight + y), creature.Rotation, Engine.Instance.ClearColor * 0.5f);
+                        Draw.Sprite(sprite, new Vector2(creature.RenderX + (Game.SpriteWidth / 2) + x, creature.RenderY - creature.RenderZ + y + Game.SpriteHeight), creature.Rotation, selected ? Color.LimeGreen * 0.75f : (Engine.Instance.ClearColor * 0.5f));
                     }
                 }
 
@@ -62,6 +84,20 @@ namespace MMORL.Client.Renderers
                     }
                 }
             }
+            Draw.Sprite(_tileIndicatorSprite, new Vector2(mouseTileX * Game.SpriteWidth, mouseTileY * Game.SpriteHeight), _tileIndicatorColor);
+
+            if (!_creatureWasSelected && creatureSelected)
+            {
+                Engine.Instance.SetMouseCursor("cursorSelect", 0, 0);
+                _creatureWasSelected = true;
+            }
+
+            if (_creatureWasSelected && !creatureSelected)
+            {
+                Engine.Instance.SetMouseCursor("cursorDefault", 0, 0);
+                _creatureWasSelected = false;
+            }
+
         }
 
         private void RenderChunk(Chunk chunk, bool drawDebugBorder = false)

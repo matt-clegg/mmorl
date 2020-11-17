@@ -55,7 +55,7 @@ namespace MMORL.Server.Entities
 
             HashSet<Point2D> newChunks = new HashSet<Point2D>();
 
-            for (int x = -2; x <= 2; x++)
+            for (int x = -3; x <= 3; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {

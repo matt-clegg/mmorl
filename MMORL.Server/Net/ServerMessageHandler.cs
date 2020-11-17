@@ -69,7 +69,7 @@ namespace MMORL.Server.Net
 
             int id = map.Entities.Count;
             Player player = new Player(id, $"player_{id}", "player", GameColor.Light, Energy.NormalSpeed, _server);
-            _gameWorld.AddEntity(player, 0, 2);
+            _gameWorld.AddEntity(player, 0, 0);
             _server.AddNewPlayerConnection(data.SenderConnection, player);
 
             SpawnEntityMessage spawnLocalPlayer = new SpawnEntityMessage(player, player.X, player.Y, EntityType.LocalPlayer);

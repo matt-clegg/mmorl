@@ -11,6 +11,10 @@ namespace MMORL.Client.Data
             LoadSprite("player", 0, 0, 16, 24, "monsters", assets);
             LoadSprite("crab", 4, 0, 16, 24, "monsters", assets);
             LoadSprite("moveIndicator", 15, 9, 16, 24, "terrain", assets);
+            LoadSprite("tileIndicator", 6, 0, 16, 24, "interface", assets);
+
+            LoadSprite("cursorDefault", 163, 79, 9, 9, "interface", assets, true);
+            LoadSprite("cursorSelect", 148, 79, 9, 9, "interface", assets, true);
 
             LoadSprite("loading", 2, 10, 16, 24, "terrain", assets);
 
@@ -51,10 +55,10 @@ namespace MMORL.Client.Data
             }
         }
 
-        private static void LoadSprite(string name, int x, int y, int width, int height, string sheetName, AssetStore<string> assets)
+        private static void LoadSprite(string name, int x, int y, int width, int height, string sheetName, AssetStore<string> assets, bool exactDimensions = false)
         {
             Spritesheet sheet = assets.GetAsset<Spritesheet>(sheetName);
-            Sprite sprite = sheet.CutSprite(x, y, width, height, name);
+            Sprite sprite = exactDimensions ? sheet.CutSpriteExact(x, y, width, height, name) : sheet.CutSprite(x, y, width, height, name);
             assets.AddAsset(name, sprite);
         }
     }

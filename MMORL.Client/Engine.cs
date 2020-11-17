@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Data;
 using MMORL.Client.Util;
 using System;
+using System.Collections.Generic;
 using System.Runtime;
 using Toolbox.Assets;
+using Toolbox.Graphics;
 using Toolbox.Input;
 
 namespace MMORL.Client
@@ -33,6 +35,9 @@ namespace MMORL.Client
             }
         }
 
+        public static int ViewPaddingX { get; private set; }
+        public static int ViewPaddingY { get; private set; }
+
         public static AssetStore<string> Assets { get; private set; }
 
         public static Matrix ScreenMatrix;
@@ -51,6 +56,8 @@ namespace MMORL.Client
 
         private readonly DelayedInputHandler _inputHandler = new DelayedInputHandler(20);
         private Game _game;
+
+        private readonly Dictionary<string, Texture2D> _cachedMouseTextures = new Dictionary<string, Texture2D>();
 
         public Engine(int width, int height, int windowWidth, int windowHeight, int scale, string title, bool fullscreen)
         {
@@ -125,6 +132,9 @@ namespace MMORL.Client
 
             double memAfter = GC.GetTotalMemory(false) / 1048576f;
             Console.WriteLine($"Loaded {memAfter - memBefore:F} MB of assets");
+
+            Sprite defaultMouseCursor = Assets.GetAsset<Sprite>("cursorDefault");
+            SetMouseCursor(defaultMouseCursor, 0, 0);
 
             Util.Draw.Initialize(GraphicsDevice);
 
@@ -209,6 +219,35 @@ namespace MMORL.Client
 #endif
         }
 
+        public void SetMouseCursor(string spriteName, int originX, int originY)
+        {
+            SetMouseCursor(Assets.GetAsset<Sprite>(spriteName), originX, originY);
+        }
+
+        public void SetMouseCursor(Sprite sprite, int originX, int originY)
+        {
+            if (!_cachedMouseTextures.TryGetValue(sprite.Name, out Texture2D texture))
+            {
+                texture = sprite.ToTexture2D(GraphicsDevice);
+                _cachedMouseTextures.Add(sprite.Name, texture);
+            }
+
+            Mouse.SetCursor(MouseCursor.FromTexture2D(texture, originX, originY));
+        }
+
+        public void DisposeMouseCursors()
+        {
+            foreach (Texture2D texture in _cachedMouseTextures.Values)
+            {
+                if (!texture.IsDisposed)
+                {
+                    texture.Dispose();
+                }
+            }
+
+            _cachedMouseTextures.Clear();
+        }
+
         protected virtual void OnGraphicsReset(object sender, EventArgs e)
         {
             UpdateView();
@@ -258,6 +297,9 @@ namespace MMORL.Client
             ViewScale = ViewWidth / (float)Width;
 
             ScreenMatrix = Matrix.CreateScale(ViewScale);
+
+            ViewPaddingX = (int)(screenWidth / 2 - ViewWidth / 2f);
+            ViewPaddingY = (int)(screenHeight / 2 - ViewHeight / 2f);
 
             Viewport = new Viewport
             {

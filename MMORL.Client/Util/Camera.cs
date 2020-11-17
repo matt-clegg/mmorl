@@ -47,8 +47,8 @@ namespace MMORL.Client.Util
             matrix = Matrix.Identity *
                     Matrix.CreateTranslation(new Vector3(-new Vector2((int)Math.Floor(position.X), (int)Math.Floor(position.Y)), 0)) *
                     Matrix.CreateRotationZ(angle) *
-                    Matrix.CreateScale(new Vector3(zoom, 1)) *
-                    Matrix.CreateTranslation(new Vector3(new Vector2((int)Math.Floor(origin.X), (int)Math.Floor(origin.Y)), 0));
+                    Matrix.CreateTranslation(new Vector3(new Vector2((int)Math.Floor(origin.X), (int)Math.Floor(origin.Y)), 0)) * 
+                    Matrix.CreateScale(new Vector3(zoom, 1));
 
             inverse = Matrix.Invert(matrix);
 
