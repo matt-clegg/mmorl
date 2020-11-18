@@ -3,11 +3,14 @@ using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Entities;
 using MMORL.Client.Input;
 using MMORL.Client.Net;
+using MMORL.Client.Pathfinding;
 using MMORL.Client.Renderers;
 using MMORL.Client.Util;
 using MMORL.Shared;
 using MMORL.Shared.Entities;
+using MMORL.Shared.Pathfinding;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Toolbox;
 
@@ -19,16 +22,20 @@ namespace MMORL.Client.Scenes
         private readonly MapRenderer _mapRenderer;
         private readonly MouseManager _mouseManager;
 
+        private readonly ChunkPathWorld _chunkPathWorld;
+
         private LocalPlayer _player;
 
         public PlayScene(GameWorld gameWorld, GameClient client)
         {
             _gameWorld = gameWorld;
+            _chunkPathWorld = new ChunkPathWorld(_gameWorld.Map);
             _gameWorld.EntityAddedEvent += OnEntityAdded;
 
             Camera.Origin = new Vector2(Engine.Width / 2, Engine.Height / 2);
 
             _mouseManager = new MouseManager(Camera);
+            _mouseManager.MouseReleasedEvent += OnMouseReleased;
 
             _mapRenderer = new MapRenderer(_gameWorld.Map, Camera, _mouseManager);
             Add(_mapRenderer);
@@ -58,6 +65,7 @@ namespace MMORL.Client.Scenes
         {
             base.Unload();
             _gameWorld.EntityAddedEvent -= OnEntityAdded;
+            _mouseManager.MouseReleasedEvent -= OnMouseReleased;
             if (_player != null)
             {
                 _player.ChunkChangedEvent -= OnPlayerChunkChange;
@@ -102,6 +110,38 @@ namespace MMORL.Client.Scenes
                     _gameWorld.Map.UnloadChunk(allChunks.X, allChunks.Y);
                 }
             }
+        }
+
+        private void OnMouseReleased(object sender, Point2D mousePos)
+        {
+            Point2D start = new Point2D(_player.X, _player.Y);
+            Point2D end = _mouseManager.GetMouseTile();
+
+            var watch = Stopwatch.StartNew();
+            List<Point2D> path = AStar<Point2D>.FindPath(_chunkPathWorld, start, end, Heuristics.EuclideanDistance, includeGoal: true);
+            watch.Stop();
+            System.Console.WriteLine($"Found path in {watch.Elapsed.TotalMilliseconds}ms");
+
+            if (path != null)
+            {
+                _player.QueuePath(path);
+            }
+        }
+
+        private Creature GetEntityUnderMouse(Vector2 mouseWorldPos)
+        {
+            foreach (Creature creature in _gameWorld.Map.Entities)
+            {
+                if (mouseWorldPos.X >= creature.RenderX &&
+                    mouseWorldPos.Y >= creature.RenderY &&
+                    mouseWorldPos.X < creature.RenderX + Game.SpriteWidth &&
+                    mouseWorldPos.Y < creature.RenderY + Game.SpriteHeight)
+                {
+                    return creature;
+                }
+            }
+
+            return null;
         }
     }
 }

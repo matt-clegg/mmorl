@@ -44,6 +44,14 @@ namespace MMORL.Server.Net
                         _gameWorld.ClearMoves(message.EntityId);
                         break;
                     }
+                case MessageType.PathRequest:
+                    {
+                        PathRequestMessage message = new PathRequestMessage();
+                        message.Read(data);
+
+                        _gameWorld.QueuePath(message.EntityId, message.Path);
+                        break;
+                    }
                 default:
                     Console.WriteLine($"Unknown message type: {type}");
                     break;

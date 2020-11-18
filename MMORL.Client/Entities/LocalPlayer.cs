@@ -80,7 +80,27 @@ namespace MMORL.Client.Entities
             base.Move(x, y);
         }
 
-        private void QueueMove(int dx, int dy)
+        public void QueuePath(List<Point2D> path)
+        {
+            ClearQueuedMoves();
+
+            PathRequestMessage message = new PathRequestMessage(Id, path);
+            _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
+
+            int lastX = X;
+            int lastY = Y;
+            foreach (Point2D next in path)
+            {
+                int dx = next.X - lastX;
+                int dy = next.Y - lastY;
+
+                QueueMove(dx, dy, false);
+                lastX = next.X;
+                lastY = next.Y;
+            }
+        }
+
+        public void QueueMove(int dx, int dy, bool sendMovePacket = true)
         {
             Point2D next = new Point2D(X, Y);
 
@@ -128,11 +148,14 @@ namespace MMORL.Client.Entities
             if (!Map.GetTile(toQueue.X, toQueue.Y)?.IsSolid ?? false)
             {
                 _movementQueue.Add(toQueue);
-                _movementToSend.Enqueue(toQueue);
+                if (sendMovePacket)
+                {
+                    _movementToSend.Enqueue(toQueue);
+                }
             }
         }
 
-        private void ClearQueuedMoves()
+        public void ClearQueuedMoves()
         {
             if (_movementQueue.Count > 0)
             {
@@ -140,7 +163,7 @@ namespace MMORL.Client.Entities
                 _movementToSend.Clear();
 
                 ClearMovesMessage message = new ClearMovesMessage(Id);
-                _client.SendMessage(message, NetDeliveryMethod.ReliableUnordered);
+                _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
         }
     }

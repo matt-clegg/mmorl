@@ -10,6 +10,7 @@
         RequestChunk,
         ChunkData,
         ClearMoves,
-        RemoveEntity
+        RemoveEntity,
+        PathRequest
     }
 }

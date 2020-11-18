@@ -7,6 +7,7 @@ using MMORL.Shared.Entities;
 using MMORL.Shared.Net;
 using MMORL.Shared.World;
 using System.Collections.Generic;
+using Toolbox;
 
 namespace MMORL.Server.World
 {
@@ -80,29 +81,47 @@ namespace MMORL.Server.World
             }
         }
 
+        public void QueuePath(int playerId, List<Point2D> path)
+        {
+            Player player = GetPlayer(playerId);
+            if (player != null)
+            {
+                player.ClearMoves();
+
+                foreach (Point2D point in path)
+                {
+                    MoveAction action = new MoveAction(point.X, point.Y);
+                    player.QueueAction(action);
+                }
+            }
+        }
+
         public void QueueMovement(int playerId, int x, int y)
         {
-            foreach (Player player in _players)
+            Player player = GetPlayer(playerId);
+            if (player != null)
             {
-                if (player.Id == playerId)
-                {
-                    MoveAction action = new MoveAction(x, y);
-                    player.QueueAction(action);
-                    return;
-                }
+                MoveAction action = new MoveAction(x, y);
+                player.QueueAction(action);
             }
         }
 
         public void ClearMoves(int playerId)
         {
+            Player player = GetPlayer(playerId);
+            player?.ClearMoves();
+        }
+
+        private Player GetPlayer(int id)
+        {
             foreach (Player player in _players)
             {
-                if (player.Id == playerId)
+                if (player.Id == id)
                 {
-                    player.ClearMoves();
-                    return;
+                    return player;
                 }
             }
+            return null;
         }
     }
 }

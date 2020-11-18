@@ -18,10 +18,10 @@ namespace MMORL.Client.Input
 
         private MouseState _lastState;
 
-        public event EventHandler<Point2D> OnMouseDown;
-        public event EventHandler<Point2D> OnMouseReleased;
-        public event EventHandler OnMouseMoved;
-        public event EventHandler OnMouseStopped;
+        public event EventHandler<Point2D> MouseDownEvent;
+        public event EventHandler<Point2D> MouseReleasedEvent;
+        public event EventHandler MouseMovedEvent;
+        public event EventHandler MouseStoppedEvent;
 
         public MouseManager(Camera sceneCamera)
         {
@@ -36,22 +36,22 @@ namespace MMORL.Client.Input
 
             if (mouse.LeftButton == ButtonState.Pressed && _lastState.LeftButton == ButtonState.Released)
             {
-                OnMouseDown?.Invoke(this, new Point2D(MouseX, MouseY));
+                MouseDownEvent?.Invoke(this, new Point2D(MouseX, MouseY));
             }
 
             if (mouse.LeftButton == ButtonState.Released && _lastState.LeftButton == ButtonState.Pressed)
             {
-                OnMouseReleased?.Invoke(this, new Point2D(MouseX, MouseY));
+                MouseReleasedEvent?.Invoke(this, new Point2D(MouseX, MouseY));
             }
 
             if (_lastMouseX != MouseX || _lastMouseY != MouseY)
             {
-                OnMouseMoved?.Invoke(this, EventArgs.Empty);
+                MouseMovedEvent?.Invoke(this, EventArgs.Empty);
             }
 
             if (_lastMouseX == MouseX && _lastMouseY == MouseY)
             {
-                OnMouseStopped?.Invoke(this, EventArgs.Empty);
+                MouseStoppedEvent?.Invoke(this, EventArgs.Empty);
             }
 
             _lastState = mouse;
@@ -67,6 +67,11 @@ namespace MMORL.Client.Input
         public Point2D GetMouseTile()
         {
             Vector2 worldPos = GetMouseWorldPosition();
+            return GetMouseTile(worldPos);
+        }
+
+        public Point2D GetMouseTile(Vector2 worldPos)
+        {
             return new Point2D((int)Math.Floor(worldPos.X / Game.SpriteWidth), (int)Math.Floor(worldPos.Y / Game.SpriteHeight));
         }
     }

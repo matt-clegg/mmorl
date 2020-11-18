@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OptimizedPriorityQueue" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Lidgren.Network.MultiTarget\Lidgren.Network.MultiTarget.csproj" />
   </ItemGroup>
 
