@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MMORL.Client.Entities;
+using MMORL.Client.Input;
 using MMORL.Client.Net;
 using MMORL.Client.Renderers;
 using MMORL.Client.Util;
@@ -16,11 +17,9 @@ namespace MMORL.Client.Scenes
     {
         private readonly GameWorld _gameWorld;
         private readonly MapRenderer _mapRenderer;
+        private readonly MouseManager _mouseManager;
 
         private LocalPlayer _player;
-
-        public int _mouseX;
-        public int _mouseY;
 
         public PlayScene(GameWorld gameWorld, GameClient client)
         {
@@ -29,7 +28,9 @@ namespace MMORL.Client.Scenes
 
             Camera.Origin = new Vector2(Engine.Width / 2, Engine.Height / 2);
 
-            _mapRenderer = new MapRenderer(_gameWorld.Map, Camera);
+            _mouseManager = new MouseManager(Camera);
+
+            _mapRenderer = new MapRenderer(_gameWorld.Map, Camera, _mouseManager);
             Add(_mapRenderer);
             //Add(new UiRenderer(client.Statistics, Camera));
         }
@@ -41,17 +42,13 @@ namespace MMORL.Client.Scenes
 
         public override void Update(float delta)
         {
-            MouseState mouse = Mouse.GetState();
-
-            _mapRenderer.MouseX = mouse.X;
-            _mapRenderer.MouseY = mouse.Y;
+            _mouseManager.Update();
 
             base.Update(delta);
 
             if (_player != null)
             {
                 Camera.Approach(new Vector2(_player.RenderX + (Game.SpriteWidth / 2), _player.RenderY + (Game.SpriteHeight / 2)), 0.1f);
-                //Camera.Approach(new Vector2(_player.RenderX, _player.RenderY), 0.1f);
             }
 
             _gameWorld.Update(delta);
@@ -75,8 +72,6 @@ namespace MMORL.Client.Scenes
                 _player.MoveEvent += OnPlayerChunkChange;
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
                 Camera.Y = _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2);
-                //Camera.X = _player.X * Game.SpriteWidth;
-                //Camera.Y = _player.Y * Game.SpriteHeight;
             }
 
             if (entity is Creature creature)
