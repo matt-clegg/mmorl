@@ -118,7 +118,7 @@ namespace MMORL.Client.Scenes
             Point2D end = _mouseManager.GetMouseTile();
 
             var watch = Stopwatch.StartNew();
-            List<Point2D> path = AStar<Point2D>.FindPath(_chunkPathWorld, start, end, Heuristics.EuclideanDistance, includeGoal: true);
+            List<Point2D> path = AStar<Point2D>.FindPath(_chunkPathWorld, start, end, Heuristics.ManhattanDistance, includeGoal: true);
             watch.Stop();
             System.Console.WriteLine($"Found path in {watch.Elapsed.TotalMilliseconds}ms");
 

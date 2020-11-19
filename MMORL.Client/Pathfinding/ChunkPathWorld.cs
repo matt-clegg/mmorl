@@ -1,5 +1,6 @@
 ﻿using MMORL.Shared.Pathfinding;
 using MMORL.Shared.World;
+using System;
 using System.Collections.Generic;
 using Toolbox;
 
@@ -18,7 +19,7 @@ namespace MMORL.Client.Pathfinding
 
         public float Cost(Point2D a, Point2D b)
         {
-            return 1f;
+            return Math.Abs(a.X - b.X) == 1 && Math.Abs(a.Y - b.Y) == 1 ? Heuristics.TwoSqrt : 1f;
         }
 
         public IEnumerable<Point2D> GetNeighbors(Point2D origin)

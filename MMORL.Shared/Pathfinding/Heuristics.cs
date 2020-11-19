@@ -5,7 +5,7 @@ namespace MMORL.Shared.Pathfinding
 {
     public static class Heuristics
     {
-        private static readonly double TwoSqrt = Math.Sqrt(2);
+        public static readonly float TwoSqrt = (float) Math.Sqrt(2);
 
         public static float ManhattanDistance(Point2D a, Point2D b)
         {
