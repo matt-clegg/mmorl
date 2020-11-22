@@ -22,7 +22,9 @@ namespace MMORL.Shared
 
         public virtual void Update(float delta)
         {
-            foreach(Entity entity in Map.Entities)
+            Map.CleanupEntities();
+
+            foreach (Entity entity in Map.Entities)
             {
                 entity.Update(delta);
             }

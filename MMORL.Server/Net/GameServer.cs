@@ -1,5 +1,4 @@
 ﻿using Lidgren.Network;
-using MMORL.Server.Auth;
 using MMORL.Server.Entities;
 using MMORL.Shared.Net;
 using MMORL.Shared.Net.Messages;
@@ -7,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 
 namespace MMORL.Server.Net
@@ -169,6 +166,14 @@ namespace MMORL.Server.Net
             return _playerConnections.FirstOrDefault(con => con.Player.Id == player.Id)?.NetConnection;
         }
 
+        public IEnumerable<NetConnection> GetConnectionsForPlayers(IEnumerable<Player> players)
+        {
+            foreach (Player player in players)
+            {
+                yield return GetConnectionForPlayer(player);
+            }
+        }
+
         public ServerEntity GetPlayerFromConnection(NetConnection netConnection)
         {
             return _playerConnections.FirstOrDefault(con => con.NetConnection.RemoteUniqueIdentifier == netConnection.RemoteUniqueIdentifier)?.Player;
@@ -184,6 +189,15 @@ namespace MMORL.Server.Net
         {
             NetOutgoingMessage outgoing = WriteMessage(message);
             _server.SendToAll(outgoing, except, deliveryMethod, 0);
+        }
+
+        public void SendMessageTo(IMessage message, IEnumerable<Player> players, NetDeliveryMethod deliveryMethod)
+        {
+            if (players.Any())
+            {
+                NetOutgoingMessage outgoing = WriteMessage(message);
+                _server.SendMessage(outgoing, GetConnectionsForPlayers(players).ToList(), deliveryMethod, 0);
+            }
         }
 
         public void SendMessage(IMessage message, NetConnection connection, NetDeliveryMethod deliveryMethod)

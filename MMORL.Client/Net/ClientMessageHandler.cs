@@ -51,12 +51,29 @@ namespace MMORL.Client.Net
                         _gameWorld.Map.LoadChunk(message.Chunk);
                         break;
                     }
+                case MessageType.UnloadChunkMessage:
+                    {
+                        UnloadChunkMessage message = new UnloadChunkMessage();
+                        message.Read(data);
+                        _gameWorld.Map.UnloadChunk(message.Chunk.X, message.Chunk.Y);
+                        break;
+                    }
                 case MessageType.MoveEntity:
                     {
                         MoveEntityMessage message = new MoveEntityMessage();
                         message.Read(data);
-                        _gameWorld.Map.GetEntityAs<Creature>(message.Id).CurrentPing = data.SenderConnection.AverageRoundtripTime / 2f;
+
+#if DEBUG
+                        Creature creature = _gameWorld.Map.GetEntityAs<Creature>(message.Id);
+                        if (creature != null)
+                        {
+
+                            creature.CurrentPing = data.SenderConnection.AverageRoundtripTime / 2f;
+                        }
+#endif
+
                         _gameWorld.Map.MoveEntity(message.Id, message.X, message.Y);
+
                         break;
                     }
                 case MessageType.SpawnEntity:
@@ -106,7 +123,7 @@ namespace MMORL.Client.Net
 
         public void OnPlayerConnect(NetIncomingMessage data)
         {
-            
+
         }
 
         public void OnPlayerDisconnect(NetIncomingMessage data)

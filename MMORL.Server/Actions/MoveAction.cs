@@ -8,7 +8,7 @@ namespace MMORL.Server.Actions
     public class MoveAction : BaseAction
     {
         public int X { get; set; }
-        public int Y { get; set; } 
+        public int Y { get; set; }
 
         public MoveAction() { }
 
@@ -23,7 +23,9 @@ namespace MMORL.Server.Actions
             entity.Move(X, Y);
 
             MoveEntityMessage message = new MoveEntityMessage(entity.Id, entity.X, entity.Y);
-            server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);
+            int chunkX = entity.X / entity.Map.ChunkSize;
+            int chunkY = entity.Y / entity.Map.ChunkSize;
+            server.SendMessageTo(message, entity.Map.GetEntitiesInChunkRadiusAs<Player>(chunkX, chunkY, Game.ChunkRadiusX, Game.ChunkRadiusY), NetDeliveryMethod.ReliableUnordered);
         }
     }
 }

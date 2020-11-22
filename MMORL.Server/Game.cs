@@ -13,6 +13,10 @@ namespace MMORL.Server
 
         private readonly ServerWorld _gameWorld;
 
+        // TODO: Make configurable
+        public const int ChunkRadiusX = 3;
+        public const int ChunkRadiusY = 2;
+
         public Game()
         {
             int port = Settings.Port;
@@ -36,6 +40,7 @@ namespace MMORL.Server
             _gameWorld = new ServerWorld(map, turnTime, _server);
             _messageHandler = new ServerMessageHandler(_server, _gameWorld);
             _server.MessageHandler = _messageHandler;
+
             _server.Start();
         }
 

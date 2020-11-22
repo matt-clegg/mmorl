@@ -2,7 +2,7 @@
 using MMORL.Server.Actions;
 using MMORL.Server.Net;
 using MMORL.Shared.Entities;
-using MMORL.Shared.Net;
+using MMORL.Shared.Net.Messages;
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
 using System.Collections.Generic;
@@ -25,6 +25,20 @@ namespace MMORL.Server.Entities
             Type = EntityType.Player;
         }
 
+        public override void Initialise(Map map, int x, int y)
+        {
+            Point2D chunkPos = map.ToChunkCoords(x, y);
+            for (int xp = -Game.ChunkRadiusX; xp <= Game.ChunkRadiusX; xp++)
+            {
+                for (int yp = -Game.ChunkRadiusY; yp <= Game.ChunkRadiusY; yp++)
+                {
+                    _loadedChunks.Add(chunkPos + new Point2D(xp,yp));
+                }
+            }
+
+            base.Initialise(map, x, y);
+        }
+
         protected override BaseAction OnGetAction()
         {
             BaseAction action = null;
@@ -37,10 +51,11 @@ namespace MMORL.Server.Entities
 
         public override void Move(int x, int y)
         {
-            Point2D newChunk = Map.ToChunkCoords(x, y); ;
+            Point2D newChunk = Map.ToChunkCoords(x, y);
 
             if (CurrentChunk != newChunk)
             {
+                System.Console.WriteLine("player chunk changed from " + CurrentChunk + " to " + newChunk);
                 OnChunkChanged();
                 LastChunk = CurrentChunk;
             }
@@ -55,9 +70,9 @@ namespace MMORL.Server.Entities
 
             HashSet<Point2D> newChunks = new HashSet<Point2D>();
 
-            for (int x = -3; x <= 3; x++)
+            for (int x = -Game.ChunkRadiusX; x <= Game.ChunkRadiusX; x++)
             {
-                for (int y = -1; y <= 1; y++)
+                for (int y = -Game.ChunkRadiusY; y <= Game.ChunkRadiusY; y++)
                 {
                     newChunks.Add(chunkPos + new Point2D(x, y));
                 }
@@ -73,7 +88,18 @@ namespace MMORL.Server.Entities
                         ChunkDataMessage chunkData = new ChunkDataMessage(chunk);
                         NetConnection connection = Server.GetConnectionForPlayer(this);
                         Server.SendMessage(chunkData, connection, NetDeliveryMethod.ReliableUnordered);
+                        System.Console.WriteLine("Sending chunk " + chunkToLoad + " to player");
                     }
+                }
+            }
+
+            foreach(Point2D chunkToRemove in _loadedChunks)
+            {
+                if (!newChunks.Contains(chunkToRemove))
+                {
+                    UnloadChunkMessage unloadChunk = new UnloadChunkMessage(chunkToRemove);
+                    NetConnection connection = Server.GetConnectionForPlayer(this);
+                    Server.SendMessage(unloadChunk, connection, NetDeliveryMethod.ReliableUnordered);
                 }
             }
 

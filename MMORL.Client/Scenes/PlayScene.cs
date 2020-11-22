@@ -10,8 +10,6 @@ using MMORL.Shared;
 using MMORL.Shared.Entities;
 using MMORL.Shared.Pathfinding;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Toolbox;
 
 namespace MMORL.Client.Scenes
@@ -66,10 +64,6 @@ namespace MMORL.Client.Scenes
             base.Unload();
             _gameWorld.EntityAddedEvent -= OnEntityAdded;
             _mouseManager.MouseReleasedEvent -= OnMouseReleased;
-            if (_player != null)
-            {
-                _player.ChunkChangedEvent -= OnPlayerChunkChange;
-            }
         }
 
         private void OnEntityAdded(object sender, Entity entity)
@@ -77,7 +71,6 @@ namespace MMORL.Client.Scenes
             if (entity is LocalPlayer player)
             {
                 _player = player;
-                _player.MoveEvent += OnPlayerChunkChange;
                 Camera.X = _player.X * Game.SpriteWidth + (Game.SpriteWidth / 2);
                 Camera.Y = _player.Y * Game.SpriteHeight + (Game.SpriteHeight / 2);
             }
@@ -89,38 +82,12 @@ namespace MMORL.Client.Scenes
             }
         }
 
-        private void OnPlayerChunkChange(object sender, Point2D position)
-        {
-            Point2D chunkPos = _gameWorld.Map.ToChunkCoords(position.X, position.Y);
-
-            HashSet<Point2D> safeChunks = new HashSet<Point2D>();
-
-            for (int x = -3; x <= 3; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
-                    safeChunks.Add(chunkPos + new Point2D(x, y));
-                }
-            }
-
-            foreach (Point2D allChunks in _gameWorld.Map.Chunks.Select(c => new Point2D(c.X, c.Y)))
-            {
-                if (!safeChunks.Contains(allChunks))
-                {
-                    _gameWorld.Map.UnloadChunk(allChunks.X, allChunks.Y);
-                }
-            }
-        }
-
         private void OnMouseReleased(object sender, Point2D mousePos)
         {
             Point2D start = new Point2D(_player.X, _player.Y);
             Point2D end = _mouseManager.GetMouseTile();
 
-            var watch = Stopwatch.StartNew();
             List<Point2D> path = AStar<Point2D>.FindPath(_chunkPathWorld, start, end, Heuristics.ManhattanDistance, includeGoal: true);
-            watch.Stop();
-            System.Console.WriteLine($"Found path in {watch.Elapsed.TotalMilliseconds}ms");
 
             if (path != null)
             {

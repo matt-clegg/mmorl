@@ -55,7 +55,8 @@ namespace MMORL.Server.World
         {
             AddEntity(entity, x, y);
             SpawnEntityMessage message = new SpawnEntityMessage(entity, x, y, EntityType.Mob);
-            _server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);
+            //_server.SendMessageToAll(message, NetDeliveryMethod.ReliableUnordered);
+            _server.SendMessageTo(message, Map.GetEntitiesInChunkRadiusAs<Player>(x / Map.ChunkSize, y / Map.ChunkSize, Game.ChunkRadiusX, Game.ChunkRadiusY), NetDeliveryMethod.ReliableUnordered);
         }
 
         public override void AddEntity(Entity entity, int x, int y)

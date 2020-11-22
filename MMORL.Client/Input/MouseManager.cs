@@ -30,6 +30,11 @@ namespace MMORL.Client.Input
 
         public void Update()
         {
+            if (!Engine.Instance.IsActive)
+            {
+                return;
+            }
+
             MouseState mouse = Mouse.GetState();
             MouseX = mouse.X;
             MouseY = mouse.Y;

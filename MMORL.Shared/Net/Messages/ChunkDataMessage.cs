@@ -2,7 +2,7 @@
 using MMORL.Shared.Util;
 using MMORL.Shared.World;
 
-namespace MMORL.Shared.Net
+namespace MMORL.Shared.Net.Messages
 {
     public class ChunkDataMessage : IMessage
     {

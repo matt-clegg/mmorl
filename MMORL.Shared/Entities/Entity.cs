@@ -19,6 +19,8 @@ namespace MMORL.Shared.Entities
 
         public Map Map { get; private set; }
 
+        public bool ShouldRemove { get; set; }
+
         public Entity(int id, string name, string sprite, GameColor color, int speed)
         {
             Id = id;
@@ -26,9 +28,10 @@ namespace MMORL.Shared.Entities
             Sprite = sprite;
             Color = color;
             Speed = speed;
+            ShouldRemove = false;
         }
 
-        public void Initialise(Map map, int x, int y)
+        public virtual void Initialise(Map map, int x, int y)
         {
             X = x;
             Y = y;

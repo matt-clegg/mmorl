@@ -85,6 +85,7 @@ namespace MMORL.Client.Renderers
                     }
                 }
             }
+
             Draw.Sprite(_tileIndicatorSprite, new Vector2(mouseTile.X * Game.SpriteWidth, mouseTile.Y * Game.SpriteHeight), _tileIndicatorColor);
 
             if (!_creatureWasSelected && creatureSelected)
@@ -98,7 +99,6 @@ namespace MMORL.Client.Renderers
                 Engine.Instance.SetMouseCursor("cursorDefault", 0, 0);
                 _creatureWasSelected = false;
             }
-
         }
 
         private void RenderChunk(Chunk chunk, bool drawDebugBorder = false)

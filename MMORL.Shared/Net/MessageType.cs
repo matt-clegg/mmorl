@@ -11,6 +11,7 @@
         ChunkData,
         ClearMoves,
         RemoveEntity,
-        PathRequest
+        PathRequest,
+        UnloadChunkMessage
     }
 }

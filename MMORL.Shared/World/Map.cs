@@ -20,6 +20,9 @@ namespace MMORL.Shared.World
 
         public int ChunkSize { get; }
 
+        public EventHandler<Chunk> ChunkLoadedEvent;
+        public EventHandler<Chunk> ChunkUnloadedEvent;
+
         public Map(int chunkSize)
         {
             ChunkSize = chunkSize;
@@ -42,6 +45,11 @@ namespace MMORL.Shared.World
         public void Remove(int entityId)
         {
             _entities.RemoveAll(e => e.Id == entityId);
+        }
+
+        public void CleanupEntities()
+        {
+            _entities.RemoveAll(e => e.ShouldRemove);
         }
 
         public void MoveEntity(int id, int x, int y)
@@ -71,15 +79,62 @@ namespace MMORL.Shared.World
 
         public T GetEntityAs<T>(int id) where T : Entity
         {
-            foreach(Entity entity in _entities)
+            foreach (Entity entity in _entities)
             {
-                if(entity.Id == id)
+                if (entity.Id == id)
                 {
                     return entity as T;
                 }
             }
 
             return default;
+        }
+
+        public IEnumerable<Entity> GetEntitiesInChunk(int chunkX, int chunkY)
+        {
+            foreach (Entity entity in _entities)
+            {
+                if (entity.X / ChunkSize == chunkX && entity.Y / ChunkSize == chunkY)
+                {
+                    yield return entity;
+                }
+            }
+        }
+
+        public IEnumerable<T> GetEntitiesInChunkAs<T>(int chunkX, int chunkY) where T : Entity
+        {
+            foreach (Entity entity in GetEntitiesInChunk(chunkX, chunkY))
+            {
+                if (entity is T found)
+                {
+                    yield return found;
+                }
+            }
+        }
+
+        public IEnumerable<Entity> GetEntitiesInChunkRadius(int chunkX, int chunkY, int radiusX, int radiusY)
+        {
+            for (int x = -radiusX; x <= radiusX; x++)
+            {
+                for (int y = -radiusY; y <= radiusY; y++)
+                {
+                    foreach (Entity entity in GetEntitiesInChunk(chunkX + x, chunkY + y))
+                    {
+                        yield return entity;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<T> GetEntitiesInChunkRadiusAs<T>(int chunkX, int chunkY, int radiusX, int radiusY) where T : Entity
+        {
+            foreach (Entity entity in GetEntitiesInChunkRadius(chunkX, chunkY, radiusX, radiusY))
+            {
+                if (entity is T found)
+                {
+                    yield return found;
+                }
+            }
         }
 
         public Tile GetTile(int x, int y)
@@ -129,6 +184,7 @@ namespace MMORL.Shared.World
             {
                 _chunks[position] = chunk;
             }
+            ChunkLoadedEvent?.Invoke(this, chunk);
         }
 
         public void UnloadChunk(int x, int y)
@@ -136,6 +192,7 @@ namespace MMORL.Shared.World
             Point2D position = new Point2D(x, y);
             if (_chunks.ContainsKey(position))
             {
+                ChunkUnloadedEvent?.Invoke(this, _chunks[position]);
                 _chunks.Remove(position);
             }
         }

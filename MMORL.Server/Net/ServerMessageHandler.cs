@@ -93,9 +93,9 @@ namespace MMORL.Server.Net
 
             Point2D chunkPos = map.ToChunkCoords(player.X, player.Y);
 
-            for (int x = -3; x <= 3; x++)
+            for (int x = -Game.ChunkRadiusX; x <= Game.ChunkRadiusX; x++)
             {
-                for (int y = -1; y <= 1; y++)
+                for (int y = -Game.ChunkRadiusY; y <= Game.ChunkRadiusY; y++)
                 {
                     Chunk chunk = map.GetChunk(chunkPos.X + x, chunkPos.Y + y);
                     if (chunk != null)
